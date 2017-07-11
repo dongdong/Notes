@@ -1354,7 +1354,7 @@
             //.....        
             if (iFeelLikeIt())    
                 return;            // 函数退出？ OK
-            g();                     // 抛出异常？ OK
+            g();                   // 抛出异常？ OK
             // rh析构函数执行delete操作
         }
 	```
@@ -1464,6 +1464,8 @@
 	```
 	
 	![two_dimension_array](imgs/cck_44_2.png)
+	
+	![two_dimension_array](imgs/cck_44_3.png)
 
 	- 对ptable执行指针算术时，算术按照ptable所指对象的大小比例进行。此时的对象是一个具有COLS个int元素的数组，其大小为sizeof(int) * COLS，而不是一个int
 
@@ -1475,7 +1477,7 @@
 * 这种对指针算术通常意义上的理解，被STL迭代器用作设计隐喻。STL迭代器还允许指针风格的算术操作，即利用了和内建指针相同的操作。
     - STL list容器一个可能的实现
 
-	![implemention_of_list](imgs/cck_44_3.png)    
+	![implemention_of_list](imgs/cck_44_4.png)    
 
 	```
     int a[] = {1, 2, 3, 4};

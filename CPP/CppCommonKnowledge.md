@@ -50,8 +50,8 @@
 
 	- 如果数组的边界的精确数值非常重要，并且希望函数只接受含义特定数量的元素，可以考虑使用一个引用形参：
 	```
-	void average(int (&arr)[12]); // 函数只接受大小为12的整形数组
-	template <int n> void average(int (&arr)[n]); // 使用模板代码泛化
+	void average(int (&arr)[12]);                   // 函数只接受大小为12的整形数组
+	template <int n> void average(int (&arr)[n]);   // 使用模板代码泛化
 	```
 	
 	- 更为传统的做法是将数组的大小明确地传入函数：
@@ -73,16 +73,16 @@
 
 	- 二位数组形参是一个指向数组的指针。第二个以及后续的边界没有退化，否则无法对形参执行指针算术运算。
 	```
-    void process(int (*arr)[20]);  // 一个指针，指向一个具有20个int元素的数组
-    void process(int arr[][20]); // 仍然是一个指针，但更清晰
+    void process(int (*arr)[20]);   // 一个指针，指向一个具有20个int元素的数组
+    void process(int arr[][20]);    // 仍然是一个指针，但更清晰
 	```
 	
 	- 需要程序员代替编译器来执行索引计算：
 	```
-    void process_2d(int* a, int n, int m) {  // a是一个nxm的数组
+    void process_2d(int* a, int n, int m) { // a是一个nxm的数组
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
-                a[i * m  + j] = 0; 			// 手工计算索引
+                a[i * m  + j] = 0;          // 手工计算索引
             }
         }
     }
@@ -126,8 +126,8 @@
     
 * 可以使用const_cast显式的执行类型转换
 	```
-    pt = pct1;    // 报错
-    pt = const_cast<T *>pct1;    // 没有错，但这种做法不妥
+    pt = pct1;                  // 报错
+    pt = const_cast<T *>pct1;   // 没有错，但这种做法不妥
 	```
 
 
@@ -181,7 +181,7 @@
 	```
     char* hopeItWorks = (char*)0x00ff0000;    // C，旧式转型
     typedef char* pChar; 
-	hopeItWorks = PChar(0x00ff0000);    	  // C++， 函数形式，旧式转型
+	hopeItWorks = PChar(0x00ff0000);          // C++， 函数形式，旧式转型
 	```
 
 
@@ -296,12 +296,12 @@
 	class Handle {
 	public:
 		//...
-		Handle(const Handle&);				// 复制构造函数
-		handle &operator=(const Handle&);	// 复制赋值操作符
+		Handle(const Handle&);              // 复制构造函数
+		handle &operator=(const Handle&);   // 复制赋值操作符
 		void swap(Handle&);
 		//...
 	private:
-		Impl *impl;							// 指向Handle的实现
+		Impl *impl;                         // 指向Handle的实现
 	};
 	```
 
@@ -311,9 +311,9 @@
     ```
     template <typename T>
     void swap(T& a, T& b) {
-        T temp(a);    		// 调用T的复制构造函数
-        a = b;           	// 调用T的复制赋值操作符
-        b = temp;    		// 调用T的复制赋值操作符
+        T temp(a);          // 调用T的复制构造函数
+        a = b;              // 调用T的复制赋值操作符
+        b = temp;           // 调用T的复制赋值操作符
     }
 	```
     - 如果T是一个庞大而复杂的类，这种方式就会导致不小的开销
@@ -328,7 +328,7 @@
 	-  首先要得到一个异常安全的复制构造函数和一个异常安全的swap操作
     ```
     Handle& Handle::operator=(const Handle& that) {
-        if (this != that) {			// 为了正确性，也出于效率方面的考虑 
+        if (this != that) {         // 为了正确性，也出于效率方面的考虑 
             Handle temp(that);    	// 异常安全的复制构造
             swap(temp);          	// 异常安全的swap
             return *this;         	// 假定temp的析构不会抛出异常
@@ -355,7 +355,7 @@
 * 调用函数指针所指向的函数时，对指针的解引用操作也是不必要的，编译器可以帮助解引用
 	```
     fp(12);     // 隐式解引用
-    (*fp)(12); 	// 显式地解引用
+    (*fp)(12);  // 显式地解引用
 	```
 
 * 不存在指向任何类型的通用函数指针
@@ -399,7 +399,7 @@
         //...
         double radius_;
     };
-    Point Shape::* loc = &Circle::center_;    	// 从基类到派送类的转换
+    Point Shape::* loc = &Circle::center_;      // 从基类到派送类的转换
     double Circle::* extent = &Shape::radius_； // 错误！ 从派生类到基本的转换；基类并不存在radius成员 
 	```
 
@@ -440,8 +440,8 @@
 
     - 不存在指向成员函数的"虚拟"指针。虚拟性是成员函数自身的属性
     ```
-    mf2 = &Shape::draw     // draw是虚函数
-    (pShare->*mf2)();          // 调用Circle::draw
+    mf2 = &Shape::draw      // draw是虚函数
+    (pShare->*mf2)();       // 调用Circle::draw
 	```
 
 * 一个指向成员函数的指针，通常不能被实现为一个简单的指向函数的指针
@@ -479,9 +479,9 @@
 
 * 使用typedef可以简化复杂的声明语法
 	```
-    int (*afp2[N])();    // 一个具有N个元素的数组，其元素类型为指向“返回值为int”的函数的指针
-    typedef int (*FP)();     // FP: 一个指向返回值为int的函数指针类型
-    FP afp3[N];    // 一个具有N个“类型为FP”的元素的数组
+    int (*afp2[N])();       // 一个具有N个元素的数组，其元素类型为指向“返回值为int”的函数的指针
+    typedef int (*FP)();    // FP: 一个指向返回值为int的函数指针类型
+    FP afp3[N];             // 一个具有N个“类型为FP”的元素的数组
 	```
 
 
@@ -649,10 +649,10 @@
         String operator+(const String&, const String&);
     }
 	//...
-   	// 重新打开名字空间
+    // 重新打开名字空间
     namespace org_semantics {
         String operator+(const String&, String&) {     //WARN: lost one const 
-            // ...
+            //...
         }
     }
 	```
@@ -741,8 +741,8 @@
     int g(org_semantics::X*);
     void aFunc() {
         org_semantics::X a;
-        f(a);          	// 调用org_semantics::f 
-        g(&a);       	// 错误！ 调用具有歧义性
+        f(a);           // 调用org_semantics::f 
+        g(&a);          // 错误！ 调用具有歧义性
         a = a + a;      // 调用org_semantics::operator+
     }
 	```
@@ -772,13 +772,13 @@
     };
     //...
     X a, b, c;
-    a = b % c;                    		// 采用中缀语法调用成员操作符%
-    a = b.operator%(c);     			// 成员函数的调用语法
+    a = b % c;                          // 采用中缀语法调用成员操作符%
+    a = b.operator%(c);                 // 成员函数的调用语法
     //...
-    X operator %(const X&, int);    	// 非成员操作符
+    X operator %(const X&, int);        // 非成员操作符
     void X::memFunc2() {
-        *this % 12;                    	// 调用非成员操作符%
-        operator%(*this, 12);    		// 错误！ 实参太多
+        *this % 12;                     // 调用非成员操作符%
+        operator%(*this, 12);           // 错误！ 实参太多
     }
 	```
     - 当我们使用函数调用语法时，调用的处理方式与其他成员函数一致
@@ -813,7 +813,7 @@
         void roll();
     };
     class Square : public Shape {
-        //......
+        //...
         void draw() const;
     }
     //...
@@ -840,7 +840,7 @@
     Shape* s = ob;
     Subject* subj = ob;
     // ...
-    if (ob == s) ... 	// true
+    if (ob == s) ...    // true
     if (subj == ob) ... // true
 	```
     - 存在从ObservedBlob到任一基类的预定义转换；同时，一个指向ObservedBlob的指针可以与指向其任何一个基类的指针进行比较。
@@ -950,9 +950,9 @@
     ```
     class Employee {
     public:
-        //......
+        //...
         virtual HRInfo* getInfo() const = 0;    // Factory Method
-        //......
+        //...
     };
     class Temp : public Employee {
     public:
@@ -962,7 +962,7 @@
         }
         //...
     };
-    //......
+    //...
     Employee* e = getAnEmployee();
     HRInfo* info = e->getInfo();    //使用Factory Method
 	```
@@ -1028,9 +1028,464 @@
 * C++11，可以通过将拷贝构造函数和拷贝赋值运算符定义为删除函数来阻止拷贝 (C++ Primer 5th ed)
 	```
 	struct NoCopy {
-	    NoCopy() = default;							// 使用合成的默认构造函数
-	    NoCopy(const NoCopy&) = delete;				// 阻止拷贝
-	    NoCopy& operator=(const NoCopy&) = delete;	// 阻止赋值
+	    NoCopy() = default;                         // 使用合成的默认构造函数
+	    NoCopy(const NoCopy&) = delete;	            // 阻止拷贝
+	    NoCopy& operator=(const NoCopy&) = delete;  // 阻止赋值
 	};
 	```
 
+
+### 33. 制造抽象基类
+
+* 抽象基类通常用于表示目标问题领域的抽象概念
+* 我们通过至少声明一个纯虚函数使得一个基类成为抽象的，编译器将会确保无人能够创建该抽象基类的任何对象
+	```
+    Class ABC {
+    public:
+        virtual ~ABC();
+        virtual void anOperation() = 0;    //纯虚函数
+    };
+	```
+
+
+* 有时候找不到一个可以成为纯虚函数的合理候选者，但仍然希望类的行为像个抽象基类
+    - 可以通过确保类中不存在公有构造函数来模拟抽象基类的性质。
+    ```
+    class ABC {
+    public:
+        virtual ~ABC();
+    protected:
+        ABC();
+        ABC(const ABC&);
+        //...
+    };
+
+	```
+    - 我们必须至少显式声明一个构造函数，否则编译器将会隐式声明一个公有、内联的默认构造函数
+    - 如果我们不显式地声明一个复制构造函数，编译器也会声明一个隐式的复制构造函数
+    - 将这两个构造函数声明为受保护的，是为了即允许派生类的构造函数使用它们，同时阻止创建独立的ABC对象
+
+
+ * 另一种方式需要人为地将类的一个虚函数指定为纯虚的；
+    - 通常来说，析构函数是最佳候选者
+    ```
+    class ABC {
+    public:
+        virtual ~ABC() = 0;
+        //...
+    };   
+    ABC::~ABC() { ... }
+	```
+    - 注意，为该纯虚函数提供一个实现是必不可少的，因为派生类的析构函数将会隐式地调用其基类的析构函数；
+    - 从一个派生类析构函数内部对一个基类析构函数的隐式调用，总是非虚拟的
+
+
+* 当一个类没有任何虚函数并且不需要显式声明构造函数时，可以使用受保护的，非虚的析构函数
+    - 受保护的析构函数和受保护的构造函数发挥的效果基本相同，不过前者的报错发生于对象离开作用域时或被显式销毁时，而非对象创建时
+    ```
+    class ABC {
+    protected:
+        ~ABC();
+    public:
+        //...
+    };
+	```
+
+
+### 34. 禁止或强制使用堆分配
+
+* 有时候，指明一些特定类的对象不应该被分配到堆上
+    - 通常是确保对象的析构函数一定会得到调用
+    - 具有自动存储区的类的局部对象，具有静态存储区的类的对象，其析构函数会被自动的调用
+    - 堆分配的对象则必须被显式地销毁
+
+
+* 指明对象不应该被分配到堆上的方式之一，是将其堆内存分配定义为不合法
+	```
+    class NoHeap {
+    public:
+        //...
+    protected:
+        void* operator new(size_t) {return 0;}
+        void operator delete(void *) {}
+    };
+	```
+    - 任何在堆上分配一个NoHeap对象的习惯性尝试，都将会导致编译期错误
+    - 给出operator new和operator delete的定义是因为在一些平台上，它们可能会被构造函数和析构函数隐式地调用
+    - 同理，将其声明为protected，因为它们可能会被派生类 的构造函数和析构函数调用
+
+
+* 还要注意阻止在堆上分配对象的数组
+    - 将array new和array delete声明为private其不予以定义即可
+	```
+    class NoHeap {
+    public:
+        //...
+    protected:
+        void* operator new(size_t) {return 0;}
+        void operator delete(void *) {}
+    private:
+        void* operator new[](size_t);
+        void operator delete[](void*);
+    };
+	```
+
+
+* 某些场合下，我们可能鼓励而非阻止使用堆分配
+    - 将析构函数声明为private即可
+    - 当对象离开其作用域时，自动或静态对象，都会隐式调用析构函数
+	```
+    class OnHeap {
+    private:
+        ~onHeap();
+    public:
+        void destory() {
+            delete this;
+        }
+    }
+	```
+
+
+### 35. placement new
+
+* 直接调用构造函数是行不通的，然而，可以通过使用placement new（定位new）来“哄骗”编译器调用构造函数
+* placement new是operator new的一个标准的重载版本
+    - 原型如下：
+    ```
+    void* operator new(size_t, void* p) throw() {return p;}
+	```
+    - placement new允许我们在一个特定位置“放置”对象，起到了调用一个构造函数的效果
+    ```
+    class SPort { ... };
+    const int comLoc = 0x00400000;
+    //...
+    void* comAddr = reinterpret_cast<void*>(comLoc);
+    SPort* com1 = new (comAddr) Sport;    // 在comLoc位置创建对象
+	```
+
+
+* placement new是函数operator new的一个版本，它并不实际分配任何存储区
+    - 因为调用placement new并没有分配存储空间，所以不要对其进行delete操作
+    - 应该直接调用该对象的析构函数
+    ```
+    com1->~SPort(); // 调用析构函数而非delete操作符
+	```
+
+
+* placement new通常用于解决缓冲区问题
+
+    - 当数组被分配时，每一个元素必须通过调用一个默认的构造函数而被初始化
+    ```
+    string* sbuf = new string[BUFSIZE];     // 调用默认构造函数
+    int size = 0;
+    void append(string buf[], int& size, const string& val) {
+        buf[size++] = val;                  // 刚才的默认构造动作白做了！
+    }
+	```
+    - 使用placement new，可以避免被默认的构造函数初始化
+    ```
+    const size_t n = sizeof(string) * BUFSIZE;
+    string* sbuf = static_cast<string *>(::operator new(n));
+    int size = 0;
+	```
+    - 在第一次访问数组元素时，不能为其赋值，因为它还没有被初始化。可以使用placement new通过复制构造函数来初始化元素：
+    ```
+    void append(string buf[], int&  size, const string& val) {
+        new (&buf[size++]) string(val);    // placement new
+    }
+	```
+    - 通常，使用placement new也需要做一些清理工作
+    ```
+    void cleanupBuf(string buf[], int size) {
+        while (size) {
+            buf[--size].~string();  // 销毁已初始化的元素
+        }
+        ::operator delete(buf);     // 释放存储区
+    } 
+	```
+    - 这一基本技术广泛应用于大多数标准库容器的实现
+
+
+- 参考：[C++中placement new操作符](http://blog.csdn.net/zhangxinrun/article/details/5940019)
+
+
+
+### 36. 特定于类的内存管理
+
+* 可以为类声明operator new和operator delete成员函数，来代替标准的实现
+	```
+    class Handle {
+    public:
+        void* operator new(size_t);
+        void operator delete(void*);
+        //...
+    };
+    Handle* h = new Handle;    // 使用Handle::operator new
+    //...
+    delete h;
+	```
+    - 在一个new表达式中分配一个类型为Handle的对象时，编译器首先会在Handle作用域内查找一个operator new，如果没有找到，会使用全局作用域中的operator new
+    - 如果定义了一个成员operator new，最后也同时定义一个成员operator delete
+
+
+*  成员operator new和operator delete是静态成员函数；仅仅负责获取和释放对象的存储区
+    - 它们可以被派生类继承
+    ```
+    class MyHandle : public Handle {
+        //...
+    };
+    MyHandle* mh = new MyHandle;    // 使用Handle::operator new
+    //...
+    delete mh;                      // 使用Handle::operator delete
+	```
+    - 如果MyHandle声明了自己的operator new和operator delete，那么编译器将在查找期间首先发现并采用它们，而不再使用从基类继承来的版本
+    - 如果在基类中定义了成员operator new和operator delete，要确保基类的析构函数是虚拟的。否则，通过一个基类指针来删除一个派生类对象的结果就是未定义的
+
+
+* 标准，全局的operator new和operator delete从堆上分配内存，但成员operator new和operator delete对于从哪里分配内存没有限制
+
+
+### 37. 数组分配
+
+* 在分配和释放内存时，应该保持数组和非数组形式的操作符的匹配
+	```
+    T* aT = new T;
+    T* aryT = new T[12];
+    delete [] aryT;
+    delete aT;
+	```
+* 数组的分配和归还所使用的函数不同于非数组形式
+    - 数组new使用array new而不是operator new分配数组内存
+    - 数组delete使用array delete而不是operator delete来释放数组内存
+    ```
+    void* operator new(size_t) throw(bad_alloc);     // operator new
+    void* operator new[](size_t) throw(bad_alloc);   // array new
+    void operator delete(void*) throw();             // operator delete
+    void operator delete[](void*) throw();           // array delete
+	```
+* 一般来说，只要声明了非数组形式的函数（operator new和operator delete），就应该为这些函数声明数组的形式
+
+* 当operator new在一个new表达式中被隐式地调用时，编译器会决定需要多少内存，并将数量作为参数传递给operator new
+	```
+    aT = new T; // 调用operator new(sizeof(T));
+	```
+    - 可以直接调用operator new，这时，必须明确指明希望分配的字节数
+    ```
+    aT = static_cast<T*>(operator new(sizeof(T)));
+	``` 
+    - 然而，当通过new表达式隐式地调用array new时，编译器会略微增加一些内存请求
+    ```
+    aryT = new T[5];    // 调用内存量为5 * sizeof(T) + delta字节
+	```
+
+
+### 38. 异常安全公理
+
+* 公理1：异常是同步的
+    - 异常是同步的并且只能发生于函数调用的边界
+* 公理2：对象的销毁是异常安全的
+    - 按照惯例，析构函数、operator delete以及operatordelete[]不会抛出异常   
+* 公理3：交换操作不会抛出异常
+
+
+### 39. 异常安全的函数
+
+* 在编写异常安全的代码时，最困难的地方不在于抛出或捕获异常，而是在“抛出”和“捕获”之间我们应该怎么做。
+    - 例，String赋值实现：
+    ```
+    String& String::operator=(const char* str) {
+        if (!str) str = "";
+        char* tmp = strcpy(new char[strlen(str) + 1], str);
+        delete [] s_;
+        s_ =  tmp;
+        return *this;
+    }
+	```
+    - 可以取消使用临时变量，从而采用更少行代码来实现它：
+    ```
+      String& String::operator=(const char* str) {
+        delete [] s_;
+        if (!str) str = "";
+        s_ = strcpy(new char[strlen(str) + 1], str);
+        return *this;
+    }
+	```
+    - 不是异常安全的！如果在不清楚新缓冲区是否被成功分配之前就delete掉原来的缓冲区，可能会使String对象处于糟糕的状态
+    - **首先做任何可能抛出异常的事情，但不会改变对象的重要的状态，然后使用不会抛出异常的操作作为结束**
+    
+- 编写正确的异常安全的代码其实很少使用try语句
+- 只要可能，尽量少用try语句块；主要在这种地方使用它们：确实希望检查一个传递的异常类型，为的是对它做一些事情
+
+
+### 40. RAII
+
+* RAII：资源获取即初始化（resource acquisition is initialization）
+    - 利用C++对象生命周期的概念来控制程序的资源，例如内存，文件句柄，网络连接以及审计追踪
+    - 如果希望保持对某个重要资源的跟踪，那么创建一个对象，并将资源的生命周期和对象的生命周期相关联
+    ```
+    class Resource { ... };
+    class ResourceHandle {
+    public:
+        explicit ResourceHandle(Resource* aResource) : r_(aResource) {}
+        ~ResourceHandle() {delete r_;}
+        Resource* get() {return r_;}
+    private:
+        ResourceHandle(const ResourceHandle&);
+        ResourceHandle& operator=(const ResourceHandle&);
+        Resource* r_;
+    };
+	```
+
+* ResourceHandle对象的好处在于，如果它被声明为一个函数的局部变量，或作为函数的参数，或是一个静态对象，我们都可以保证析构函数会得到调用从而释放对象所引用的资源
+    ```
+    void f() {
+        Resource* rh = new Resource;
+        //......
+        if (iFeelLikeIt())    
+            return;            // 函数退出？
+        g();                     // 抛出异常？
+        delete rh;
+    }
+	```
+    - 使用RAII， 可以使函数变得更简单，并且更强健
+    ```
+        void f() {
+            ResourceHandle rh(new Resource);
+            //.....        
+            if (iFeelLikeIt())    
+                return;            // 函数退出？ OK
+            g();                     // 抛出异常？ OK
+            // rh析构函数执行delete操作
+        }
+	```
+    - 当使用RAII时，只有一种情况无法确保析构函数得到调用，就是当ResourceHandle对象被分配到堆上时，因为这样一来，只有显式地delete该ResourceHandle对象，此ResourceHandle对象所包含的析构函数才会被调用
+
+
+### 41. new、构造函数和异常
+
+* 为了编写异常安全的代码，应该保持对任何分配的资源的跟踪并且时刻准备着当异常发生时释放它们。
+    - 可以将代码组织成无需回收资源的方式，参见“异常安全的函数”
+    - 可以使用资源句柄来自动回收资源，参见“RAII”
+    - 极端情况下，还可以采用try语句块，但这应该视作为一个例外
+
+
+* 关于new操作符的使用有一个明显的问题：new操作符实际上执行两个不同的操作，首先它调用一个名为operator new的函数来分配一些存储区，然后它调用一个构造函数来将未被初始化的存储区变成一个对象
+    - 如果operator new成功，而构造函数异常，我们应该调用operator delete来归还分配的内存
+    - 编译器可以帮助我们处理这些情况。而且会调用operator new相对应的operator delete
+    ```
+    String* title = new String("Kicks");      // 使用成员operator new （如果提供）
+    String* title = ::new String("Kicks");    // 使用全局的new/delete   
+	```    
+    - 同样的情形也适用于数组分配以及使用了重载版本的operator new[]的其他分配，编译器将会试图发现并调用适当的operator delete[]
+    
+
+### 42. 智能指针
+
+* 智能指针是一个类类型，它打扮成一个指针，但额外提供了内建指针无法啊提供的能力
+    - 通常而言，一个智能指针使用类的构造函数，析构函数和复制操作符所提供的能力，来控制或跟踪对它所指向的东西的访问
+    - 所有智能指针都重载->和*操作符，从而可以采用标准指针羽凡来使用它们
+    - 另有一些智能指针，尤其是用作STL迭代器的指针，还重载了其他一些指针操作符，包括++，--，+，-，+=，-=
+    - 智能指针通常采用类模板来实现，从而使它们可以指向不同类型的对象
+    ```
+        template <typename T>
+        class CheckedPtr {
+        public:
+            explicit CheckedPtr(T* p) : p_(p) {}
+            ~checkPtr() {delete p_;}
+            T* operator->() {return get();}
+            T& operator *() {return *get();}
+        private:
+            T* p_;
+            T* get() {
+                 if (!p_) {
+                    throw NullCheckedPointer();
+                }
+                return p_;
+            }
+            CheckedPtr(const CheckedPtr&);
+            Checked& operator=(const CheckedPtr&);
+        };
+        //...
+        CheckedPtr<Shape> s(new Circle);
+        s->draw();    // (s.operator->())->draw()
+        (*s).draw();  // (s.operator*()).draw()
+	```
+
+
+### 43. auto_ptr非同寻常
+
+* auto_ptr是一个类模板，用于生成具体的智能指针
+    - 正如RAII中讨论的，资源句柄是C++编程中广为使用的技术，因此标准库提供了一个资源句柄模板，以便满足许多需用资源句柄的场合，这个模板就是auto_ptr
+    ```
+    using std::auto_ptr;
+    auto_ptr<Shape> aShape(new Circle);
+    aShape->draw();
+    (*aShape).draw();
+	```
+* auto_ptr好处：
+    - 非常高效
+    - 当auto_ptr离开作用域时，其析构函数将会释放它所指向的任何东西
+    - 在类型转换方面，其行为酷似内建指针
+    ```
+    auto_ptr<Circle> aCircle(new Circle);
+    aShape = aCircle;     
+	```   
+- 对auto_ptr而言，赋值和初始化并不是真正的复制操作
+    - 它们实际上是将底层对象的控制权从一个auto_ptr转移到另一个auto_ptr
+    - 如果aShape是非空的，那么不管它指向任何东西，都会被delete掉，并且代之以aCircle所指向的东西
+    - 除此之外，aCircle也被设置为空
+    - 底层对象的控制权从“源”传递给“接收器”。对于资源句柄的情形来说，这是一个很好的属性
+- 两种场合应该避免使用auto_ptr
+    - auto_ptr永远都不应该被用作容器元素；容器中的元素通常在容器内部被拷来拷去，并且容器假定其元素遵从普通的非auto_ptr复制语义
+    - 一个auto_ptr应该指向单个元素，而不应该指向一个数组；当auto_ptr所指向的对象被删除时，它使用operator delete而非array delete来执行删除元素
+
+
+### 44. 指针算术
+
+* 为了理解C++中指针算术的性质，最好将指针放在数组环境中考虑
+	```
+    const int MAX = 10;
+    short points[MAX];
+    short* curPoint = points + 4;
+	```
+
+	![pointer_arithmetic](imgs/cck_44_1.png)
+
+	- 将curPoint递增1并不是将指针增加一个字节，而是增加sizeof(short)个字节。
+	- 这也正是void*不支持指针算术运算的原因，因为无法正确的按比例进行 指针算术运算
+
+
+* 多维数组其实是一个数组的数组
+	```
+    const int ROWS = 2;
+    const int COLS = 3;
+    int table[ROWS][COLS];        // 一个具有ROWS个元素的数组，其中每一个又是一个具有COLS个int元素的数组
+    int (*ptable)[COLS] = table;  // 一个指针，指向具有COLS个int元素的数组
+	```
+	
+	![two_dimension_array](imgs/cck_44_2.png)
+
+	- 对ptable执行指针算术时，算术按照ptable所指对象的大小比例进行。此时的对象是一个具有COLS个int元素的数组，其大小为sizeof(int) * COLS，而不是一个int
+
+
+* 同一类型的两个指针可以进行减法运算，运算结果为参与运算的两个指针之间的元素个数
+    - 两个指针相减的结果类信息为标准typedef ptrdiff_t，通常是int的一个别名
+
+
+* 这种对指针算术通常意义上的理解，被STL迭代器用作设计隐喻。STL迭代器还允许指针风格的算术操作，即利用了和内建指针相同的操作。
+    - STL list容器一个可能的实现
+
+	![implemention_of_list](imgs/cck_44_3.png)    
+
+	```
+    int a[] = {1, 2, 3, 4};
+    std::list<int> lst(a, a+3);
+    std::list<int>::iterator iter = lst.begin(); 
+    ++iter;
+	```
+    - list的迭代器不能是一个内建指针，而是一个带有重载操作符的智能指针
+    - 指针算术操作，例如++iter，并不是像递增一个指针那样来递增iter，而是根据节点之间的链接关系，从list当前节点移动 到下一个节点
+
+
+
+### To be continue...

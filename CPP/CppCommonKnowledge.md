@@ -77,12 +77,12 @@
     void process(int arr[][20]); // 仍然是一个指针，但更清晰
 	```
 	
-	- 程序员代替编译器来执行索引计算：
+	- 需要程序员代替编译器来执行索引计算：
 	```
     void process_2d(int* a, int n, int m) {  // a是一个nxm的数组
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
-                a[i * m  + j] = 0; // 手工计算索引
+                a[i * m  + j] = 0; 			// 手工计算索引
             }
         }
     }
@@ -99,13 +99,9 @@
 
 ### 7. 常量指针与指向常量的指针
 
-* 
-	```
-    T* pt = new T;
-	```
-
 * 指向常量的指针
 	```
+	T* pt = new T;
     const T * pct1 = pt;    // 指向常量T的指针
     T const * pct2 = pt;    // 也是指向常量T的指针
 	```
@@ -511,3 +507,219 @@
     cout << "next two in series: " << fib() << " " << fib() << endl;
 	```
 * 使用函数指针不灵活，不能处理需要状态的函数或指向成员函数的指针。可以创建一个函数对象层次结构。该层次结构的基类是一个简单接口类，只声明一个纯虚operator()
+
+
+### 19. Command模式与好莱坞法则
+
+* 当一个函数对象用作回调时，就是一个Command（命令）模式的实例
+* 好莱坞法则：“不要call我们，我们会call你”，责任分割
+* 使用简单的函数指针作为回调的做法有一些严格的限制，函数指针没有相关联的数据
+* 使用面向对象方式的好处：
+    - 函数对象可以封装数据
+    - 函数对象可以通过虚拟成员表现出动态行为，可以拥有一个相关的函数对象的层次结构
+	```
+    class Action {
+    public:
+        virtual ~Action();
+        virtual void operator()() = 0;
+        virtaul Action* clone() const = 0;
+    };
+    class Button {
+    public:
+        Button(const std::string& label): label_(label), action_(0) {}
+        void setAction(const Action* newAction) {
+            Action* temp = newAction->clone();
+            delete action_;
+            action_ = temp;
+        }
+        void onClick() const {
+            if (action_) (*action_)();
+        }
+    private:
+        std::string label_;
+        Action* action_;
+    };
+    class PlayMusic : public Action {
+    public:
+        PlayMusic(const string& songFile): song_(songFile) {}
+        void operator() ();
+    private:
+        MP3 song_;
+    }
+    //......
+    Button* b = new Button("Anoko no namaewa");
+    auto_ptr<PlayMusic> song(new PlayMusic("AnokiNoNamaewa.mp3"));
+    b->setAction(song);
+	```
+
+
+### 20. STL函数对象
+
+* 比较器
+    - STL一般允许我们指定一个替代的类似于小于操作符，用于比较两个值
+    ```
+    inline bool popLess(const State&a, const State& b) {
+        return a.population() < b.population();
+    }
+    State union[50];
+    // ......
+    std::sort(union, union + 50, popLess); // 按人口进行排序
+	```
+
+* 使用函数对象作为比较器
+    - 派生于binary_function基类，此项机制允许其他部分的STL实现询问函数对象编译期问题
+    - 从binary_function派生下来的PopLess类型，允许我们找出函数对象的参数和返回值类型
+    - 用作STL比较器的函数对象一般都很小巧，简单且快速。在函数对象中避免使用数据成员
+    ```
+    struct PopLess: public std::binary_function<State, State, bool> {
+        bool operator()(const State &a, const State& b) const {
+            return popLess(a, b);
+        }
+    } 
+    sort(union, union + 50, PopLess()); // 匿名临时对象
+	```
+
+* 判断式
+    - 询问关于单个对象的真/假问题的操作
+    ```
+    struct IsWarm: public std::unary_function<State, bool> {
+        bool operator()(const State& a) const {
+            return a.aveTempF() > 60;
+        }
+    } 
+    State* warmandsparse = find_if(union, union+50, IsWarm());
+	```
+
+
+### 21. 重载与重写并不相同
+
+* 重载和重写之间没有任何关系
+    - 重载发生与同一个作用域内有两个或更多个函数具有相同的名字，但签名不同时；选择形参与函数调用中的实参有着最佳匹配的那一个函数
+    - 重写发生于派生类函数和基类虚函数具有相同的名字和签名时；派生类函数的实现将会取代它所继承的基类函数的实现
+
+
+### 22. Template Method模式
+
+* 它是基类设计者为派生类设计者提供清晰指示的一种方式，指示“应该如何实现基类所规定的契约”
+* 虚函数指定的操作可以由派生类通过重写机制定制
+    - 一个非纯虚函数提供了一个默认实现，并且不强求派生类一定要重写它
+    - 一个纯虚函数则必须在具体派生类中进行重写
+* Template Method模式确立了实现的整体架构，同时将部分实现延迟到派生类中进行      
+    - 通常，Template Method被实现为一个公有非虚函数，它调用被保护的虚函数
+    - 派生类必须接受它所继承的非虚函数所指明的全部实现，
+    - 同时还可以通过重写该公有函数所调用的被保护的虚函数，以有限的方式来定制其行为
+    ```
+    class App {
+    public:
+        virtual ~App();
+        //......
+        void Startup() {    // Template Method
+            initialize();
+            if (!validate()) altInit();
+        }
+    protected:
+        virtual bool validate() const = 0;
+        virtual void altInit();
+        //......
+    private:
+        void initialize();
+        //......
+    };
+    class MyApp: public App {
+    public:
+        //......
+    private:
+        bool validate() const;
+        void altInit();
+        //......
+    };
+	```
+* Template Method是一个“好莱坞法则”的例子，即”不要call我们，我们会call你“
+    - 派生类类设计者不知道validate或altInit何时会被调用，但他们知道这两个方法被调用时应该做什么
+    - 基类和派生类同心协力打造了一个完整的函数实现
+
+
+### 23. 名字空间
+
+* 名字空间是对全局作用域的细分
+	```
+	// 打开名字空间
+    namespace org_semantics {
+        class String {...};
+        String operator+(const String&, const String&);
+    }
+	...
+   	// 重新打开名字空间
+    namespace org_semantics {
+        String operator+(const String&, String&) {     //WARN: lost one const 
+            // ......
+        }
+    }
+	```
+    - 名字空间限定，可以仅仅为该定义加上名字空间限定而无需重新打开名字空间；可以防止上面的错误
+    ```
+    org_semantics::String org_semantics::operator+(const org_semantics::String &a, const org_semantics::String& b)
+    {
+        // ......    
+    }
+	```
+
+* C++标准库组件，除了operator new，operator delete，array new，array delete等，大多数都在std名字空间中
+
+
+* using指令
+    - using namespace std;
+    - 将using指令局限在较小的作用域，例如函数体或函数体内的某个代码块
+
+
+* using声明
+    - using std::vector;
+    - 通过一个真正的声明提供对名字空间中名字的访问
+    - using声明通常是介于冗长的显式限定和不受限制的using指令之间的一种折中
+
+
+* 使用别名
+	```
+    namespace S = org_semantics;
+	```
+
+
+* 匿名名字空间
+    - 一种声明具有静态连接的函数和变量的新潮方式
+    - 匿名名字空间中的内容，只能在其所出现的翻译单元（预处理后的文件）内被访问，就像静态对象一样
+    ```
+    namespace {
+        int anInt = 12;
+        int aFunc() {return anInt;}
+    }
+	```
+
+
+### 24. 成员函数查找
+
+* 调用一个成员函数时，涉及三个步骤：
+	1. 编译器查找函数的名字
+    2. 从可用的候选者中选择最佳匹配函数
+    3. 检查是否具有访问该匹配函数的权限
+    
+
+* 内层作用域中的名字会隐藏外层作用域中相同的名字。不同于Java中，内层作用域中的方法名字和外层作用域中同名方法属于重载关系
+	```
+    class B {
+        public:
+            //......
+            void f(double);
+    };
+    class D : public B {
+        void f(int);
+    };
+    //......
+    D d;
+    d.f(12.3)
+	```
+    - step1: 查找函数名字，定位到D::f上
+    - step2: 只有一个候选者D::f，尝试匹配该函数，将实参从double转换为int
+    - step3: 检查访问权限，得到错误！D::f是私有成员
+    - 基类中有着更好匹配，并且可访问的函数f，但不会使用。编译器一旦在内层作用域找到一个，就不会到外层作用域继续查找该名字。
+
+

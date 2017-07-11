@@ -392,11 +392,11 @@
 - 指向基类成员的指针到指向公有派生类成员的指针的隐式转换
 	```
     class Shape {
-        //......
+        //...
         Point center_;  
     };
     class Circle : public Shape {
-        //......
+        //...
         double radius_;
     };
     Point Shape::* loc = &Circle::center_;    	// 从基类到派送类的转换
@@ -411,13 +411,13 @@
     - 使用classname*而不是*来说明所指向的函数时classname的一个成员
     ```
     class Shape {
-        //......
+        //...
         void moveTo(Point newLocation);
         bool validate() const;
         virtual bool draw() const = 0;
     };
     class Circle : public Shape {
-        //......
+        //...
         bool draw() const;
     };
     void (Shape::* mf1)(Point) = &Shape::moveTo; // 指向成员函数的指针
@@ -546,7 +546,7 @@
     private:
         MP3 song_;
     }
-    //......
+    //...
     Button* b = new Button("Anoko no namaewa");
     auto_ptr<PlayMusic> song(new PlayMusic("AnokiNoNamaewa.mp3"));
     b->setAction(song);
@@ -562,7 +562,7 @@
         return a.population() < b.population();
     }
     State union[50];
-    // ......
+    //...
     std::sort(union, union + 50, popLess); // 按人口进行排序
 	```
 
@@ -612,7 +612,7 @@
     class App {
     public:
         virtual ~App();
-        //......
+        //...
         void Startup() {    // Template Method
             initialize();
             if (!validate()) altInit();
@@ -620,18 +620,18 @@
     protected:
         virtual bool validate() const = 0;
         virtual void altInit();
-        //......
+        //...
     private:
         void initialize();
-        //......
+        //...
     };
     class MyApp: public App {
     public:
-        //......
+        //...
     private:
         bool validate() const;
         void altInit();
-        //......
+        //...
     };
 	```
 * Template Method是一个“好莱坞法则”的例子，即”不要call我们，我们会call你“
@@ -648,11 +648,11 @@
         class String {...};
         String operator+(const String&, const String&);
     }
-	...
+	//...
    	// 重新打开名字空间
     namespace org_semantics {
         String operator+(const String&, String&) {     //WARN: lost one const 
-            // ......
+            // ...
         }
     }
 	```
@@ -660,7 +660,7 @@
     ```
     org_semantics::String org_semantics::operator+(const org_semantics::String &a, const org_semantics::String& b)
     {
-        // ......    
+        //...    
     }
 	```
 
@@ -706,14 +706,14 @@
 * 内层作用域中的名字会隐藏外层作用域中相同的名字。不同于Java中，内层作用域中的方法名字和外层作用域中同名方法属于重载关系
 	```
     class B {
-        public:
-            //......
-            void f(double);
+    public:
+        //...
+        void f(double);
     };
     class D : public B {
         void f(int);
     };
-    //......
+    //...
     D d;
     d.f(12.3)
 	```
@@ -722,4 +722,314 @@
     - step3: 检查访问权限，得到错误！D::f是私有成员
     - 基类中有着更好匹配，并且可访问的函数f，但不会使用。编译器一旦在内层作用域找到一个，就不会到外层作用域继续查找该名字。
 
+
+### 25. 实参相依查找
+
+* 实参相依查找（ADL: Argument Dependent Lookup）
+
+    - 当查找一个函数调用表达式中函数名字时，编译器也会到“包含函数调用实参的类型”的名字空间中查找
+    ```
+    namespace org_semantics {
+        class X { ... };
+        void f(const X&);
+        void g(X*);
+        X operator+(const X&, const X&);
+        class String { ... };
+        std::ostream operator<<(std::ostream&, const String&);
+    }
+    //...
+    int g(org_semantics::X*);
+    void aFunc() {
+        org_semantics::X a;
+        f(a);          	// 调用org_semantics::f 
+        g(&a);       	// 错误！ 调用具有歧义性
+        a = a + a;      // 调用org_semantics::operator+
+    }
+	```
+    - 由于实参a的类型被定义与org_semantics名字空间中，编译器也会到该名字空间中检查候选函数
+    - org_semantics::g与::g都为候选函数，从而导致调用具有歧义性
+    - org_semantics::g与::g不是重载，因为它们不是声明于同一个作用域中的
+    ```
+    org_semantics::String name("Qwan");
+    std::cout << "Hello, " << name;
+	```   
+    - 第一个<<是std::baisic_ostream的一个成员函数
+    - 第二个<<是对于org_semantics::operator<<的调用
+    
+- ADL是关于函数如何被调用的一个属性，而重载是关于函数被如何声明的一个属性
+
+
+### 26. 操作符函数查找
+
+* 有时看上去好像一个成员操作符函数重载了一个非成员的操作符，其实并非如此。这不是重载，而是不同的查找算法
+	```
+    class X {
+    public:
+        X operator%(const X&) const;
+        X memFunc1(const X&);
+        void memFunc2();
+        //...
+    };
+    //...
+    X a, b, c;
+    a = b % c;                    		// 采用中缀语法调用成员操作符%
+    a = b.operator%(c);     			// 成员函数的调用语法
+    //...
+    X operator %(const X&, int);    	// 非成员操作符
+    void X::memFunc2() {
+        *this % 12;                    	// 调用非成员操作符%
+        operator%(*this, 12);    		// 错误！ 实参太多
+    }
+	```
+    - 当我们使用函数调用语法时，调用的处理方式与其他成员函数一致
+    - 对于中缀操作符调用来说，编译器不仅会考虑成员操作符，也会考虑非成员操作符。这不是重载的实例，而是编译器在两个不同的地方查找候选函数
+    
+
+* 对重载操作符的中缀调用执行了一个退化形式的ADL，即当确定将哪些函数纳入重载解析考虑范围时，中缀操作符中左参数的类的作用域和全局作用域都被考虑在内
+
+
+
+### 27. 能力查询
+
+* 在C++中，能力查询通常是通过对“不相关”的类进行dynamic_cast转换而表达的
+
+	![capability_query](imgs/cck_27_1.png)
+
+	```
+	class Shape {
+    public:
+        virtual ~Shape();
+        virtual void draw() const = 0;
+        //...
+    };
+    class Rollable {
+    public:
+        virtual ~Rollable();
+        virtual void roll() = 0;
+    };
+    class Circle : public Shape, public Rollable {
+        //...
+        void draw() const;
+        void roll();
+    };
+    class Square : public Shape {
+        //......
+        void draw() const;
+    }
+    //...
+    Shape* s = getSomeShape();
+    if (Rollable *roller = dynamic_cast<Rollable *>(s)) {
+        roller->roll();
+    }
+	```
+    - 这种dynamic_cast用法通常称为“横向转型（cross-cast）”，试图在一个类层次结构中执行横向转换，而不是向上或向下转换
+
+
+* 能力查询只是偶尔需要，它们通常是糟糕设计的“指示器”。最好避免对一个对象的能力进行运行期查询。
+
+
+### 28. 指针比较的含义
+
+* C++中，一个对象可以有多个有效的地址；指针比较不是关于地址的问题，而是关于对象同一性的问题
+	```
+    class Shape { ... };
+    class Subject { ... };
+    class ObservedBlob : public Shape, public Subject { ... };
+    //...
+    ObservedBlob *ob = new ObservedBlob;
+    Shape* s = ob;
+    Subject* subj = ob;
+    // ...
+    if (ob == s) ... 	// true
+    if (subj == ob) ... // true
+	```
+    - 存在从ObservedBlob到任一基类的预定义转换；同时，一个指向ObservedBlob的指针可以与指向其任何一个基类的指针进行比较。
+ 
+   
+* 多重继承内存布局
+	
+	![memory layouts](imgs/cck_28_1.png)
+
+	- ob, s和subj都指向同一个observedBlob对象，因此编译器必须确保ob与s和subj的比较结果为true；
+    - 不能拿s与subj进行比较，因为他们之间不具有继承关系
+    - 编译器通过将参与比较的指针值之一调整一定的偏移量来完成这种比较
+    ```
+    ob ? (ob + delta == subj) : (subj == 0);
+    ```
+	- 将ob调整为指向其subject基类子对象，然后再和subj进行比较
+
+
+* 当我们处理指向对象的指针或引用时，必须小心避免丢失类型信息。
+    - 指向void的指针是常见的错误
+        void* v = subj;
+        if (ob == v) // 不相等！
+    - void丢掉了subj中包含的地址的类型信息，编译器只好进行原始地址比较了
+
+
+### 29. 虚构造函数与Prototype模式
+
+* 有两个主要原因需要使用“克隆”：
+    - 对正在处理的对象的精确类型保持“不知情”
+    - 并且，不希望改变被克隆的原始对象，也不希望接受原始对象改变的影响
+
+
+* Prototype模式的一个实例
+    - C++中提供了克隆对象能力的成员函数。
+    - “虚构造函数“：通过一个虚函数对其类的构造函数的间接调用
+    ```
+    class Meal {
+    public:
+        virtual ~Meal();
+        virtual void eat() = 0;
+        virtual Meal* clone() const = 0;
+        // ......
+    };
+    class Spaghetti : public Meal {
+    public:
+        Spaghetti(const Spaghetti&);
+        void eat();
+        Spaghetti* clone() const {
+            return new Spaghetti(*this);    // 调用复制构造函数
+        }
+    }
+    // ......
+    const Meal* m = thatGuyMeal();
+    Meal* myMeal = m->clone(); 
+	```
+    - clone函数实际上是一种专门类型的Factory Method模式，它制造一个适当的产品，同时允许调用代码对上下文和产品类的精确类型保持不知情
+    - 例证了软件设计中“不知情”的优点，尤其是在用于定制和扩展的框架结构软件设计中
+
+
+### 30. Factory Method模式
+
+* 一个高级设计通常要求基于一个现有对象类型来创建一个“适当”类型的对象
+
+    -  例如，我们可能拥有一个指向某种类型的Employee对象的指针或引用，现在需要为该类型的Employee生成一个适当类型的HRInfo对象
+    ![factory_method](imgs/cck_30_1.png)
+	
+	 - 一种常见、但总是错误的方法是使用“类型编码”和switch语句
+	 ```
+    class Employee {
+    public:
+        enum Type {SALARY, HOURLY, TEMP};
+        Type type() const {return type_;}
+        //...
+    private:
+        Type type_;
+        //...
+    };
+    //...
+    HRInfo* getInfo(const Employee& e) {
+        switch(e.type()) {
+        case SALARY:
+        case HOURLY: return new StdInfo(e);
+        case TEMP: return new TempInfo(static_cast<const Temp*>(e));
+        default: return 0;
+        }
+    }
+	```
+
+	- 另外一种几乎同样糟糕的方式，是使用dynamic_cast来询问关于Employee对象一系列的私人问题
+	```
+    HRInfo* getInfo(const Employee& e) {
+        if (const Salary* s = dynamic_cast<const Salary*>(&e)) {
+            return new StdInfo(s);
+        } else if (const Hourly* h = dynamic_cast<const Hourly*>(&e)) {
+            return new StdInfo(h);
+        } else if (const Temp* t =  dynamic_cast<const Temp*>(&e)) {
+            return new TempInfo(t);
+        } else {
+            return 0;
+        }
+    }
+	```
+
+	- 两种getInfo实现的主要缺点：与所有从Employee和HRInfo派生下来的具体类型相耦合，还必须熟悉从每一种Employee类型到其相应的HRInfo类型的映射
+    - Employee自己最清楚需要何种HRInfo对象
+    ```
+    class Employee {
+    public:
+        //......
+        virtual HRInfo* getInfo() const = 0;    // Factory Method
+        //......
+    };
+    class Temp : public Employee {
+    public:
+        //......
+        TempInfo* getInfo() const {
+            return new TempInfo(*this);
+        }
+        //......
+    };
+    //......
+    Employee* e = getAnEmployee();
+    HRInfo* info = e->getInfo();    //使用Factory Method
+	```
+
+
+* Factory Method的本质在于：
+	- 基类提供一个虚函数“挂钩”，用于生产适当的“产品”。
+	- 每一个派生类可以重写继承的虚函数，为自己产生适当的产品。
+    - 实际上，我们具备了使用一个未知类型的对象来产生另一个未知类型的对象的能力
+    - Factory Method模式通常意味着一个高级设计需要基于一个对象的确切类型产生另一个“适当”的对象，这样的需要往往发生于存在多个平行或几乎平行的类层次结构的情况下。
+    - Factory Method模式通常是治疗一系列运行期类型查询问题的良方
+
+
+### 31. 协变返回类型
+
+* 一般来说，一个重写的函数与被它重写的函数必须具有相同的返回类型
+	```
+	class Shape {
+	public:
+	    //...
+	    virtual double area() const = 0;
+	    //...
+	};
+	class Circle : public Shape {
+	public:
+    	float area() const; 	// error! different return type    
+    	//...
+	};
+
+	```
+* 协变返回类型（covariant return type）
+    - 只要原来的返回类型是基类类型的指针或引用，新的返回值类型是派生类的指针或引用，覆盖的方法就可以改变返回类型
+	```
+	class Shape {
+	public:
+		//...
+	    virtual Shape *clone() const = 0; // Prototype
+	    //...
+	};
+	class Circle : public Shape {
+	public:
+	    Circle *clone() const;
+	    //...
+	};
+
+	```
+
+### 32. 禁止复制
+
+* 访问修饰符可以用于表达和执行高级约束技术，指明一个类可以被怎样使用
+* 通过将复制操作声明为private，不接受对象的复制操作
+    - 将复制构造函数和复制赋值操作符声明为private是必不可少的，否则编译器就会偷偷地将它们声明为公有、内联的成员
+    ```
+    class NoCopy {
+    public:
+        NoCopy(int);
+        //......
+    private:
+        NoCopy(const NoCopy&);              // 复制构造函数
+        NoCopy& operator=(const NoCopy&)    // 复制赋值操作符
+    };
+	```
+* C++11，可以通过将拷贝构造函数和拷贝赋值运算符定义为删除函数来阻止拷贝 (C++ Primer 5th ed)
+	```
+	struct NoCopy {
+		NoCopy() = default;							// 使用合成的默认构造函数
+		NoCopy(const NoCopy&) = delete;				// 阻止拷贝
+		NoCopy& operator=(const NoCopy&) = delete;	// 阻止赋值
+	};
+	```
 

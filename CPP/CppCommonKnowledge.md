@@ -905,6 +905,7 @@
 * 一个高级设计通常要求基于一个现有对象类型来创建一个“适当”类型的对象
 
     -  例如，我们可能拥有一个指向某种类型的Employee对象的指针或引用，现在需要为该类型的Employee生成一个适当类型的HRInfo对象
+    
     ![factory_method](imgs/cck_30_1.png)
 	
 	 - 一种常见、但总是错误的方法是使用“类型编码”和switch语句
@@ -998,8 +999,8 @@
 	class Shape {
 	public:
 		//...
-	    virtual Shape *clone() const = 0; // Prototype
-	    //...
+		virtual Shape *clone() const = 0; // Prototype
+		//...
 	};
 	class Circle : public Shape {
 	public:
@@ -1017,11 +1018,11 @@
     ```
     class NoCopy {
     public:
-        NoCopy(int);
-        //......
+	    NoCopy(int);
+	    //......
     private:
-        NoCopy(const NoCopy&);              // 复制构造函数
-        NoCopy& operator=(const NoCopy&)    // 复制赋值操作符
+	    NoCopy(const NoCopy&);              // 复制构造函数
+	    NoCopy& operator=(const NoCopy&)    // 复制赋值操作符
     };
 	```
 * C++11，可以通过将拷贝构造函数和拷贝赋值运算符定义为删除函数来阻止拷贝 (C++ Primer 5th ed)

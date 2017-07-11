@@ -956,11 +956,11 @@
     };
     class Temp : public Employee {
     public:
-        //......
+        //...
         TempInfo* getInfo() const {
             return new TempInfo(*this);
         }
-        //......
+        //...
     };
     //......
     Employee* e = getAnEmployee();
@@ -988,8 +988,8 @@
 	};
 	class Circle : public Shape {
 	public:
-    	float area() const; 	// error! different return type    
-    	//...
+        float area() const; 	// error! different return type    
+        //...
 	};
 
 	```
@@ -998,9 +998,9 @@
 	```
 	class Shape {
 	public:
-		//...
-		virtual Shape *clone() const = 0; // Prototype
-		//...
+	    //...
+	    virtual Shape *clone() const = 0; // Prototype
+	    //...
 	};
 	class Circle : public Shape {
 	public:
@@ -1019,7 +1019,7 @@
     class NoCopy {
     public:
 	    NoCopy(int);
-	    //......
+	    //...
     private:
 	    NoCopy(const NoCopy&);              // 复制构造函数
 	    NoCopy& operator=(const NoCopy&)    // 复制赋值操作符
@@ -1028,9 +1028,9 @@
 * C++11，可以通过将拷贝构造函数和拷贝赋值运算符定义为删除函数来阻止拷贝 (C++ Primer 5th ed)
 	```
 	struct NoCopy {
-		NoCopy() = default;							// 使用合成的默认构造函数
-		NoCopy(const NoCopy&) = delete;				// 阻止拷贝
-		NoCopy& operator=(const NoCopy&) = delete;	// 阻止赋值
+	    NoCopy() = default;							// 使用合成的默认构造函数
+	    NoCopy(const NoCopy&) = delete;				// 阻止拷贝
+	    NoCopy& operator=(const NoCopy&) = delete;	// 阻止赋值
 	};
 	```
 

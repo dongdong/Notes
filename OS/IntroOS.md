@@ -344,6 +344,138 @@
 
 ### 12. Virtualization
 
+* Preview
+	- Overview of virtualization
+	- Main technical approaches in popular virtualization solutions
+	- Virtualization-related hardware advances
+
+
+* Virtualization
+	- Virtualization allows concurrent execution of multiple OS and their applications on the same physicala machine
+	- Virtual resources: each OS thins that it owns hardware resources
+	- Virtual machine(vm): OS + applications + virtual resources(guest domain)
+	- Virtualization layer: management of physical hardware, virtual machine monitor(VMM), hypervisor
+
+
+* Virtaul Machine
+	- A virtual machine is an efficient, isolated, duplicate of the real machine, supported by a virtual machine monitor(VMM)
+
+
+* VMM goals:
+	- Fidelity: provides environment essentially identical with the originala machine
+	- Performance: programs show at worst only minor decrease in speed
+	- Safety & isolation: VMM is in complete control of system resources
+
+
+* Two main virtualization models:
+	- Bare-matal or hypervisor based
+	- Hosted
+
+
+* Bare-metal virtualization
+	- VMM(hypervisor) manages all hardware resources and supports execution of VMs
+	- Service(privileged) VM to deal with devices and other configuration and management task
+	- Xen
+		- Opensource or Citrix XenServer
+		- dom0 and domUs
+		- drivers in dom0
+	- ESX(VMware)
+		- many open APIs
+		- drivers in VMM
+	
+	![bare_metal](imgs/IntroOS_12_1.png)
+
+
+* Hosted virtualization
+	- Host OS owns all hardware
+	- Special VMM module provides hardware interface to VMs and deals with VM context switching 
+	
+	![hosted](imgs/IntroOS_12_2.png)
+
+
+* KVM
+	- Kernel-based VM
+	- KVM kernel module + QEMU for hardware virtualization
+	- Leverages linux opensource community
+	
+	![hosted](imgs/IntroOS_12_3.png)
+
+##### CPU virtualization
+
+* Trap-and-Emulate
+	- guest instructions executed directly by hardware
+	- for non-privileged operations: hardware speeds => effiency
+	- for privileged operations: trap to hypervisor
+		- if illegal: terminate VM
+		- if legal: emulate the behavior the guest OS was expecting from the hardware
+	- works all right in MainFrame
+	- Problems:
+		- x86, pre 2005, 4 rings, no root/non-root modes yet, hypervisor in ring0, guest OS in ring 1
+		- 17 privileged instructions do not trap, and fail silently
+		- hypervisor does NOT know, so it does not try to change settings, OS does not know, so assumes change was successful
+
+
+* Binary translation
+	- Main idea: rewrite the VM binary
+	- Pioneered at Stanford, commercialized as VMWare
+	- Goal: full virtualization, guset OS not modified
+	- Approach: dynamic binary translation
+		- inspect code blocks to be executed
+		- if needed, translate to alternate instruction sequencee, e.g. to emulate desired behavior, possibly even avoiding trap
+		- otherwise, run at hardware speed
+
+
+* Para-virtualization
+	- Goal: performance, give up on unmodified guests
+	- Approach: modify guest so that:
+		- it knows it is running virtualized
+		- it makes explicit calls to the hypervisor(hypercalls)
+		- hypercall(~ system call): package context info, specify desired hypercall, trap to VMM
+		- e.g. Xen
+
+##### Memory virtualization
+
+* Full virtualization
+	- all guest expect contiguous physical memory, starting at 0
+	- Vitual Address(VA), Physical Address(VA), Machine Address(MA) and page frame numbers
+	- still leverages hardware MMU, TLB, ...
+	- option 1:
+		- guest page tables: VA => PA
+		- hypervisor: PA => MA
+		- to expensive!
+	- option 2:
+		- guest page tables: VA => PA
+		- hypervisor shaow PT: VA => MA
+		- hypervisor maintains consistence, e.g. invalidate on context switch, write-protect guest PT to track new mappings...
+
+
+* Para-virtualization
+	- guest aware of virtualization
+	- no longer strict requirement on contiguous physical memory starting at 0
+	- explicitly register page tables with hypervisor
+	- cat "batch" page table updates to reduce VM exits
+ 
+##### Device virtualization
+
+* Device virtualization
+	- CPUs and memory: less diversity, ISA-level, standardization of interface
+	- Devices: high diversity, lack of standard specification of device interface and behavior
+	- 3 key models for device virtualization
+
+		
+* Passthrough model
+	- Approach: VMM-level driver configures devices access permissions
+	- 
+		
+* Hypervisor-Direct model
+
+		
+* Split-Device Driver model
+
+
+
+
+
 
 
 ### 13. Remote Procedure Calls

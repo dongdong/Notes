@@ -308,7 +308,7 @@
 	- simple approach: pause and copy
 	- better approach:
 		- write-protect and copy everything once
-		- copy diffs of "dirtied" pages for incremental checkpoints
+		- copy diffs of 'dirtied' pages for incremental checkpoints
 		- rebuild from multiple diffs, or in background
 
 * Debugging
@@ -453,7 +453,7 @@
 	- guest aware of virtualization
 	- no longer strict requirement on contiguous physical memory starting at 0
 	- explicitly register page tables with hypervisor
-	- cat "batch" page table updates to reduce VM exits
+	- cat 'batch' page table updates to reduce VM exits
  
 ##### Device virtualization
 
@@ -465,17 +465,51 @@
 		
 * Passthrough model
 	- Approach: VMM-level driver configures devices access permissions
-	- 
-		
+	- Merits:
+		- VM provided with exclusive access to the device VM can directly access the device (VMM-bypage)
+	- Demerits:
+		- device sharing difficult
+		- device  must have exact type of device as what VM expects
+		- VM migration tricky
+	
+	 ![passthrough](imgs/IntroOS_12_4.png)
+
+
 * Hypervisor-Direct model
+	- Approach:
+		- VMM intercepts all device access
+		- emulate device operation translate to generic I/O operation, travers VMM-resident I/O stack, invoke VMM-resident driver
+	- Merits:
+		- VM decoupled from physical device
+		- sharing, migration,  dealing with device specifics, ...
+	- Demerits:
+		- latency of device operations
+		- device driver ecosystem comlexities in hypervisor
 
-		
+	![hypervisor-direct](imgs/IntroOS_12_5.png)
+
+
 * Split-Device Driver model
+	- Approach: device access control split between:
+		- front-end driver in guest VM, device API
+		- back-end driver in service VM or Host
+	- Merits:
+		- eliminate emulation overhead, allow for better management of shared devices
+	- Demerits:
+		- modified guest driver, limited to para-virtualized guests
 
+##### Hardware Virtualization
 
+* Key virtualization-related hardware features of X86
+	- AMD Pacifica & Intel Vanderpool Technology (Intel VT), ~2005
+	- Modes: root/non-root or host/guest mode
+	- VM control structure, per VCPU, 'walked' by hardware
+	- extended page tables and tagged TLB with VM ids
+	- multiqueue devices and interrupt routing
+	- security and management support
+	- additional instructions to excercise the above features
 
-
-
+	![inter_virtualization](imgs/IntroOS_12_6.png)
 
 
 ### 13. Remote Procedure Calls

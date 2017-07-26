@@ -12,42 +12,37 @@
 
 ##### Scalability and other good things to achieve
 
-* Scalability is the ability of a system, network, or process, to handle a growing amout of work in a capable manner or its ability to be enlarged to accommodate that growth 
+* Scalability 
+	- Scalability is the ability of a system, network, or process, to handle a growing amout of work in a capable manner or its ability to be enlarged to accommodate that growth 
 	- Size scalability: adding more nodes should make the system linearly faster; growing the dataset should not increase latency
 	- Geographic scalability: it should be possible to use multiple data centers to reduce the time it takes to respond user queries, while dealing with cross-data center latency in some sensible manner
 	- Administrative scalability: adding more nodes should not increase the administrative costs of the system; e.g. the administrators-to-machines ratio
 
 
-* A scalable system is one that contines to meet the needs of its users as scale increases. There are two paticular relevant aspects: 
-	- performance and 
+* A scalable system is one that continues to meet the needs of its users as scale increases. There are two paticular relevant aspects: 
+	- performance
 	- availability
 
 
-* Performance
+* Performance (and Latency)
 	- Performance is characterized by the amount of useful work accomplished by a computer system compared to the time and resource used. 
 	- This may involve achieving one or more of the following:
 		- Short response time, low lantency for a given piece of work
 		- High throughput, rate of processing work
 		- Low utilization of computing resosurces
 	- There are tradeoffs involved in optimizing for any of these outcomes
-
-
-* Latency
 	- Latency is the time between when something happened and the time it has an impact or becomes visible. 
 	- For example, latency could be measured in terms of how long it takes for a write to become visible to readers.
 	- In a distributed system, there is a minimum latency that cannot be overcome: 
-		- the speed of light limits how fast information can travel, 
-		- and hardware components have a minimum latency cost incurred per operation
+		- the speed of light limits how fast information can travel
+		- hardware components have a minimum latency cost incurred per operation
 
 
-* Availability
+* Availability (and fault tolerance)
 	- The proportion of time a system is in a functioning condition. If a user cannot access the system, it is said to be unavailable
 	- Distributed systems can take a bunch of unreliable components, and build a reliable system on top of them
 	- Formulaically, availability is: Availability = uptime / (uptime + downtime)
 	- The best we can do to achieve high availability is design for fault tolerance
-
-
-* Fault tolerance
 	- Fault tolerance: ability of a system to behave in a well-defined manner once faults occur
 	- You can't tolerate faults you haven't considered
 

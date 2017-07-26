@@ -4,8 +4,11 @@
 	* [C++ Common Knowledge](CPP/CppCommonKnowledge.md)
 
 
-* OS
+* Operating System
 	* [Introduction to Operating Systems](OS/IntroOS.md)
 
+
+* Distributed System
+	* [Distributed systems for fun and profit](DS/DistributedSystemsForFunAndProfit.md)
 
 * ...

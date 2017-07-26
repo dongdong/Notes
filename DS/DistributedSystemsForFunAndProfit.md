@@ -1,14 +1,14 @@
 # Distributed systems for fun and profit
 
-### 0. Introduction
-
-* Much of distributed programming is about dealing with the implicationns of two consequences of distribution:
-	- that information travels at (most) the speed of light
-	- that independent things fail independently
-
 ### 1. Basics: Distributed systems at a high level
 
-* Distributed programming is the art of solving the same problem that you can solve on a single computer using multiple computers
+
+* Distributed programming
+	- Distributed programming is the art of solving the same problem that you can solve on a single computer using multiple computers
+	- Much of distributed programming is about dealing with the implicationns of two consequences of distribution:
+		- that information travels at (most) the speed of light
+		- that independent things fail independently
+
 
 * Scalability
 	- Scalability is the ability of a system, network, or process, to handle a growing amout of work in a capable manner or its ability to be enlarged to accommodate that growth 
@@ -18,7 +18,7 @@
 	- A scalable system is one that contines to meet the needs of its users as scale increases. There are two paticular relevant aspects: performance and availability
 
 
-* Performance (and Lantency)
+* Performance (and lantency)
 	- Performance is characterized by the amount of useful work accomplished by a computer system compared to the time and resource used. 
 	- This may involve achieving one or more of the following:
 		- Short response time, low lantency for a given piece of work

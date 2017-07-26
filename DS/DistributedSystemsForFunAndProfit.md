@@ -142,7 +142,7 @@
 	![network_partition](imgs/dsffap_2_1.png)
 
 
-* Timeing/ordering assumptions
+* Timing/ordering assumptions
 	- Any message sent from one node to the others will arrive at a different time and potentially in a different order at the other nodes
 	- The two main alternative timing assumption:
 		- Synchronous model: processes execute in lock-step; ther is a known upper bound on message transmission delay; each process has an accurate clock
@@ -216,7 +216,7 @@
 
 ##### Consistency Model
 
-*Consistency Model
+* Consistency Model
 	- A contract between programmer and system, wherein the system guarantees that if the programmer follows some specific rules, the results of operations on the data store will be predictable
 	- Strong consistency models, capable of maintaining a single copy
 		- Linearizable consistency

@@ -262,8 +262,8 @@
 
 * Order
 	- Order as a property has received so much attention because the easiest way to define "correctness" is to say "it works like it would on a single machine". And that usually means that: 
-		- a) we run the same operations and 
-		- b) that we run them in the same order - even if there are multiple machines
+		- we run the same operations 
+		- we run them in the same order, even if there are multiple machines
 	- The nice thing about distributed systems that preserve order is that they are generic. They will be executed exactly like on a single machine
 	- Distributed systems do not behave in a predictable manner. They do not guarantee any specific order, rate of advance, or lack of delay. Each node does have some local order, as execution is (roughly) sequential, but these local orders are independent of each other
 
@@ -273,26 +273,26 @@
 	- In a partially ordered set, some pairs of elements are not comparable and hence a partial order doesn't specify the exact order of every item
 	- Any system that can only do one thing at a time will create a total order of operations 
 	- Total order makes executions of programs predictable. This order can be maintained on a distributed system, but at a cost: 
-		- communication is expensive, and 
+		- communication is expensive
 		- time synchronization is difficult and fragile
 
 
 * Time
-	- Time is a source of order. 
-	- It allows us to define the order of operations, which also has an interpretation that people can understand (a second, a minute, a day and so on)
+	- Time is a source of order
+	- It allows us to define the order of operations, which also has an interpretation that people can understand e.g. a second, a minute, a day
 
 
 * Three interpretations of time and timestamp:
 	- Order
 		- we can attach timestamps to unordered events to order them
-		- we can use timestamps to enforce a specific ordering of operations or the delivery of messages. E.g., by delaying an operation if it arrives out of order
+		- we can use timestamps to enforce a specific ordering of operations or the delivery of messages. For example by delaying an operation if it arrives out of order
 		- we can use the value of a timestamp to determine whether something happened chronologically before something else
 	- Duration
 		-  Algorithms can use durations to make some judgment calls. In particular, the amount of time spent waiting can provide clues about whether a system is partitioned or merely experiencing high latency
 	- Interpretation
-		- The value of a timestamp can be interpreted as a date, which is useful. For example, a timestamp of when a downtime started from a log file.
+		- The value of a timestamp can be interpreted as a date, which is useful, like a timestamp of when a downtime started from a log file.
 
-* Benifits from time in a distributed system:
+* Benifits of time in a distributed system:
 	- Time can define order across a system without communication
 	- Time can define boundary conditions for algorithms
 		- To distinguish between "high latency" and "server or network link is down"

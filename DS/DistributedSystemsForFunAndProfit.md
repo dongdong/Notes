@@ -1,4 +1,4 @@
-# Distributed systems for fun and profit
+# [Distributed systems for fun and profit](http://book.mixu.net/distsys/index.html)
 
 ### 1. Basics: distributed systems at a high level
 
@@ -258,7 +258,83 @@
 
 ### 3. Time and order
 
+##### Time and order
 
+* Order
+	- Order as a property has received so much attention because the easiest way to define "correctness" is to say "it works like it would on a single machine". And that usually means that: 
+		- a) we run the same operations and 
+		- b) that we run them in the same order - even if there are multiple machines
+	- The nice thing about distributed systems that preserve order is that they are generic. They will be executed exactly like on a single machine
+	- Distributed systems do not behave in a predictable manner. They do not guarantee any specific order, rate of advance, or lack of delay. Each node does have some local order, as execution is (roughly) sequential, but these local orders are independent of each other
+
+
+* Total and Partial order
+	- The natural state in a distributed system is partial order. Neither the network nor independent nodes make any guarantees about relative order; but at each node, you can observe a local order
+	- In a partially ordered set, some pairs of elements are not comparable and hence a partial order doesn't specify the exact order of every item
+	- Any system that can only do one thing at a time will create a total order of operations 
+	- Total order makes executions of programs predictable. This order can be maintained on a distributed system, but at a cost: 
+		- communication is expensive, and 
+		- time synchronization is difficult and fragile
+
+
+* Time
+	- Time is a source of order. 
+	- It allows us to define the order of operations, which also has an interpretation that people can understand (a second, a minute, a day and so on)
+
+
+* Three interpretations of time and timestamp:
+	- Order
+		- we can attach timestamps to unordered events to order them
+		- we can use timestamps to enforce a specific ordering of operations or the delivery of messages. E.g., by delaying an operation if it arrives out of order
+		- we can use the value of a timestamp to determine whether something happened chronologically before something else
+	- Duration
+		-  Algorithms can use durations to make some judgment calls. In particular, the amount of time spent waiting can provide clues about whether a system is partitioned or merely experiencing high latency
+	- Interpretation
+		- The value of a timestamp can be interpreted as a date, which is useful. For example, a timestamp of when a downtime started from a log file.
+
+* Benifits from time in a distributed system:
+	- Time can define order across a system without communication
+	- Time can define boundary conditions for algorithms
+		- To distinguish between "high latency" and "server or network link is down"
+		- In most real-world systems timeouts are used to determine whether a remote machine has failed, or whether it is simply experiencing high network latency. Algorithms that make this determination are called **failure detectors**
+
+
+* Three timing assumptions:
+	- The synchronous system model has a global clock
+	- The partially synchronous model has a local clock
+	- In the asynchronous system model one cannot use clocks at all
+
+
+* Time with a "global-clock" assumption
+	- The global clock assumption is that there is a global clock of perfect accuracy, and that everyone has access to that clock
+	- The global clock is basically a source of total order: exact order of every operation on all nodes even if those nodes have never communicated
+	- In reality, clock synchronization is only possible to a limited degree of accuracy
+	- Assuming that clocks on distributed nodes are perfectly synchronized, we can use timestamps freely to determine a global total order. But there are many scenarios where a simple failure can cause hard-to-trace anomalies, such as a user accidentally changing the local time on a machine, or an out-of-date machine joining a cluster, or synchronized clocks drifting at slightly different rates 
+	- Facebook's Cassandra is an example of a system that assumes clocks are synchronized. It uses timestamps to resolve conflicts between writes: the write with the newer timestamp wins
+	- Google's Spanner: the paper describes their TrueTime API, which synchronizes time but also estimates worst-case clock drift
+	
+	![global_clock](imgs/dsffap_3_1.png)
+
+
+* Time with a "Local-clock" assumption
+	- Local-clock assumes each machine has its own clock, but there is no global clock. It means you cannot meaningfully compare timestamps from two different machines
+	- The local clock assumption assigns a partial order: events on each system are ordered but events cannot be ordered across systems by only using a clock
+
+	![global_clock](imgs/dsffap_3_2.png)		
+
+
+* Time with a "No-clock" assumption
+	- There is the notion of logical time. Instead of using clocks, we track causality in some other way
+	- We can use counters and communication to determine whether something happened before, after or concurrently with something else
+	- This way, we can determine the order of events between different machines, but cannot say anything about intervals and **cannot use timeouts**
+	- This is a partial order: events can be ordered on a single system using a counter and no communication, but ordering events across systems requires a message exchange
+	- Vector clocks are a way to track causality without using clocks
+	- Riak (Basho) and Voldemort (Linkedin) use vector clocks rather than assuming that nodes have access to a global clock of perfect accuracy
+
+
+##### Vector clocks: time for causal order
+
+xxx
 
 
 ### 4. Replication: preventing divergence

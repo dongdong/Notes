@@ -248,11 +248,17 @@
 
 ##### Further readings
 
-
+* Impossibility of distributed consensus with one faulty process
+* Perspectives on the CAP Theorem 
+* [CAP Twelve Years Later: How the "Rules" Have Changed](https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed)
+* [Replicated Data Consistency Explained Through Baseball](http://pages.cs.wisc.edu/~remzi/Classes/739/Papers/Bart/ConsistencyAndBaseballReport.pdf)
+* [Life beyond Distributed Transactions: an Apostate’s Opinion](https://cs.brown.edu/courses/cs227/archives/2012/papers/weaker/cidr07p15.pdf)
 
 	
 
 ### 3. Time and order
+
+
 
 
 ### 4. Replication: preventing divergence

@@ -285,7 +285,7 @@
 * Three interpretations of time and timestamp:
 	- Order
 		- we can attach timestamps to unordered events to order them
-		- we can use timestamps to enforce a specific ordering of operations or the delivery of messages. For example by delaying an operation if it arrives out of order
+		- we can use timestamps to enforce a specific ordering of operations or the delivery of messages. For example, by delaying an operation if it arrives out of order
 		- we can use the value of a timestamp to determine whether something happened chronologically before something else
 	- Duration
 		-  Algorithms can use durations to make some judgment calls. In particular, the amount of time spent waiting can provide clues about whether a system is partitioned or merely experiencing high latency

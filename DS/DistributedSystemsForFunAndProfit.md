@@ -334,7 +334,65 @@
 
 ##### Vector clocks: time for causal order
 
-xxx
+* Lamport clocks and vector clocks are replacements for physical clocks which rely on counters and communication to determine the order of events across a distributed system. These clocks provide a counter that is comparable across different nodes
+
+* Lamport Clock
+	- A Lamport clock is simple. Each process maintains a counter using the following rules:
+		- Whenever a process does work, increment the counter
+		- Whenever a process sends a message, include the counter
+		- When a message is received, set the counter to max(local_counter, received_counter) + 
+	- A Lamport clock allows counters to be compared across systems, with a caveat: Lamport clocks define a partial order. If timestamp(a) < timestamp(b):
+		- a may have happened before b or
+		- a may be incomparable with b
+	- Lamport clock can only carry information about one timeline, hence, comparing Lamport timestamps from systems that never communicate with each other may cause concurrent events to appear to be ordered when they are not
+
+
+* Vector clock
+	- A vector clock is an extension of Lamport clock, which maintains an array [ t1, t2, ... ] of N logical clocks, one per each node. Rather than incrementing a common counter, each node increments its own logical clock in the vector by one on each internal event. 
+	- The update rules are:
+		- Whenever a process does work, increment the logical clock value of the node in the vector
+		- Whenever a process sends a message, include the full vector of logical clocks
+		- When a message is received:
+			- update each element in the vector to be max(local, received)
+			- increment the logical clock value representing the current node in the vector
+	- The issue with vector clocks is mainly that they require one entry per node, which means that they can potentially become very large for large systems. A variety of techniques have been applied to reduce the size of vector clocks: 
+		- by performing periodic garbage collection
+		- by reducing accuracy by limiting the size
+	
+	![vector_clock](imgs/dsffap_3_3.png)
+
+
+##### Failure detectors: time for cutoff
+
+* The amount of time spent waiting can provide clues about whether a system is partitioned or merely experiencing high latency, so we don't need to assume a global clock of perfect accuracy, it is simply enough that there is a reliable-enough local clock
+
+
+* Failure detector
+	- A failure detector is a way to abstract away the exact timing assumptions. 
+	- Failure detectors are implemented using heartbeat messages and timers. Processes exchange heartbeat messages. If a message response is not received before the timeout occurs, then the process suspects the other process
+	- A failure detector based on a timeout will carry the risk of being 
+		- overly aggressive: declaring a node to have failed
+		- overly conservative: taking a long time to detect a crash	
+
+
+* Design of failure detector
+	- Failure detectors can be characterized using two properties: completeness and accuracy
+		- Strong completeness: every crashed process is eventually suspected by every correct process
+		- Weak completeness: every crashed process is eventually suspected by some correct process
+		- Strong accuracy: no correct process is suspected ever
+		- Weak accuracy: some correct process is never suspected
+	- Completeness is easier to achieve than accuracy. All you need to do is not to wait forever to suspect someone. 
+	- Weak completeness can be transformed to strong completeness by broadcasting information about suspected processes
+	- Avoiding incorrectly suspecting non-faulty processes needs a hard maximum on the message delay. 
+		- Failure detectors in a synchronous system model can be strongly accurate. 
+		- System models that do not impose hard bounds on message delay, failure detection can at best be eventually accurate
+ 	- Failure detector should be able to adjust to changing network conditions and to avoid hardcoding timeout values into it
+	 	- For example, Cassandra uses an accrual failure detector, which is a failure detector that outputs a suspicion level (a value between 0 and 1) rather than a binary "up" or "down" judgment. This allows the application using the failure detector to make its own decisions about the tradeoff between accurate detection and early detection
+
+	![vector_clock](imgs/dsffap_3_4.png)
+
+
+* 
 
 
 ### 4. Replication: preventing divergence

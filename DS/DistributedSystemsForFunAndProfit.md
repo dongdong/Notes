@@ -392,7 +392,42 @@
 	![vector_clock](imgs/dsffap_3_4.png)
 
 
-* 
+##### Time, order and performance
+
+* The natural view of the world is a partial order. You can transform a partial order into a total order, but this requires communication, waiting and imposes restrictions that limit how many computers can do work at any particular point in time
+
+
+* All clocks are mere approximations bound either by network latency or by physics. Even keeping a simple integer counter in sync across multiple nodes is a challenge
+
+
+* Algorithms care about more abstract properties rather than time:
+	- the causal ordering of events
+	- failure detection, e.g. approximations of upper bounds on message delivery)
+	- **consistent snapshots**, e.g. the ability to examine the state of a system at some point in time; 
+
+
+* Often the easiest way to ensure that events are delivered in some defined order is to nominate a single (bottleneck) node through which all operations are passed
+
+
+* Is time/order/synchronicity really necessary? It depends. 
+	- In some use cases, we want each intermediate operation to move the system from one consistent state to another. For example, in many cases we want the responses from a database to represent all of the available information, and we want to avoid dealing with the issues that might occur if the system could return an inconsistent result
+	- In other cases, we might not need that much time/order/synchronization. For example, if you are running a long running computation, and don't really care about what the system does until the very end - then you don't really need much synchronization as long as you can guarantee that the answer is correct
+
+
+##### Further reading
+
+* Lamport clocks, vector clocks
+	- Time, Clocks and Ordering of Events in a Distributed System - Leslie Lamport, 1978
+* Failure detection
+	- Unreliable failure detectors and reliable distributed systems - Chandra and Toueg
+	- Latency- and Bandwidth-Minimizing Optimal Failure Detectors - So & Sirer, 2007
+	- The failure detector abstraction, Freiling, Guerraoui & Kuznetsov, 2011
+* Snapshots
+	- Consistent global states of distributed systems: Fundamental concepts and mechanisms, Ozalp Babaogly and Keith Marzullo, 1993
+	- Distributed snapshots: Determining global states of distributed systems, K. Mani Chandy and Leslie Lamport, 1985
+* Causality
+	- Detecting Causal Relationships in Distributed Computations: In Search of the Holy Grail - Schwarz & Mattern, 1994
+	- Understanding the Limitations of Causally and Totally Ordered Communication - Cheriton & Skeen, 1993
 
 
 ### 4. Replication: preventing divergence

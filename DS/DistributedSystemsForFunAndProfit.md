@@ -432,6 +432,41 @@
 
 ### 4. Replication: preventing divergence
 
+##### Replication
+
+* Why replication problem interesing?
+	- Parallel databases are differentiated is in terms of their replication features
+	- Replication provides a context for many subproblems, such as leader election, failure detection, consensus and atomic broadcast
+
+
+* Synchronous replication
+	- Synchronous replication also known as active, or eager, or push, or pessimistic replication
+	- The client sends the request, then it is blocked and waiting for a reply from the system. During the synchronous phase, the first server contacts the two other servers and waits until it has received replies from all the other servers. Finally, it sends a response to the client informing it of the result
+	- This is a **write N-of-N approach**: before a response is returned, it has to be seen and acknowledged by every server in the system
+	- From a performance perspective: the system will be as fast as the slowest server in it. The system will also be very sensitive to changes in network latency
+	- Given the N-of-N approach, the system cannot tolerate the loss of any servers. When a server is lost, the system can no longer write to all the nodes, and so it cannot proceed
+	- This arrangement can provide very strong durability guarantees: the client can be certain that all N servers have received, stored and acknowledged the request when the response is returned. In order to lose an accepted update, all N copies would need to be lost
+
+	![synchronous_replication](imgs/dsffap_4_1.png)
+
+
+* Asynchronous replication
+	- Asynchronous replication: passive replication, or pull replication, or lazy replication 
+	- The master/leader/coordinator immediately sends back a response to the client. It might at best store the update locally, but it will not do any significant work synchronously
+	- At some later stage, the asynchronous portion of the replication task takes place. Here, the master contacts the other servers using some communication pattern, and the other servers update their copies of the data
+	- This is a **write 1-of-N approach**: a response is returned immediately and update propagation occurs sometime later
+	- From a performance perspective: the system is fast. The client does not need to spend any additional time waiting for the internals of the system to do their work. The system is also more tolerant of network latency, since fluctuations in internal latency do not cause additional waiting on the client side
+	- Given the 1-of-N approach, the system can remain available as long as at least one node is up, at least in theory, though in practice the load will probably be too high
+	- This arrangement can only provide weak, or probabilistic durability guarantees. If nothing goes wrong, the data is eventually replicated to all N machines. However, if the only server containing the data is lost before this can take place, the data is permanently lost
+	- Passive replication cannot ensure that all nodes in the system always contain the same state. If you accept writes at multiple locations and do not require that those nodes synchronously agree, then you will run the risk of divergence
+
+	![Asynchronous_replication](imgs/dsffap_4_2.png)
+
+
+##### An overview of major replication approaches
+
+xxx
+
 
 ### 5. Replication: accepting divergence
 

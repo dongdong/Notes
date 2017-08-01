@@ -512,7 +512,118 @@
 
 ##### Partition tolerant consensus algorithms
 
-xxx
+* Network partition
+	- During a network partition, it is not possible to distinguish between a failed remote node and the node being unreachable. If a network partition occurs but no nodes fail, then the system is divided into two partitions which are simultaneously active
+	- A system that enforces single-copy consistency must have some method to break symmetry. Otherwise, it will split into two separate systems, which can diverge from each other and can no longer maintain the illusion of a single copy
+	- Network partition tolerance for systems that enforce single-copy consistency requires that during a network partition, only one partition of the system remains active since during a network partition it is not possible to prevent divergence
+
+
+* Majority decisions
+	- Partition tolerant consensus algorithms rely on a majority vote. Requiring a majority of nodes rather than all of the nodes (as in 2PC) to agree on updates allows a minority of the nodes to be down, or slow, or unreachable due to a network partition. As long as (N/2 + 1)-of-N nodes are up and accessible, the system can continue to operate 
+	- Majorities are also useful because they can tolerate disagreement: if there is a perturbation or failure, the nodes may vote differently. However, since there can be only one majority decision, a temporary disagreement can at most block the protocol from proceeding (giving up liveness) but it cannot violate the single-copy consistency criterion (safety property)
+
+
+* Roles
+	- Consensus algorithms for replication have distinct roles for each node. 
+	- Having a single fixed leader or master server is an optimization that makes the system more efficient, since we know that all updates must pass through that server. Nodes that are not the leader just need to forward their requests to the leader
+	- Both Paxos and Raft make use of distinct node roles. In particular, they have a leader node ("proposer" in Paxos) that is responsible for coordination during normal operation. The rest of the nodes are followers ("acceptors" or "voters" in Paxos) 
+	
+
+* Epochs
+	- Each period of normal operation in both Paxos and Raft is called an epoch ("term" in Raft). During each epoch only one node is the designated leader
+	- After a successful election, the same leader coordinates until the end of the epoch
+	- Some elections may fail, causing the epoch to end immediately 
+	- Epochs act as a logical clock, allowing other nodes to identify when an outdated node starts communicating.  Nodes that were partitioned or out of operation will have a smaller epoch number than the current one, and their commands are ignored
+
+	![epochs](imgs/dsffap_4_3.png)
+
+
+* Leader election
+	- All nodes start as followers; one node is elected to be a leader at the start. During normal operation, the leader maintains a heartbeat which allows the followers to detect if the leader fails or becomes partitioned
+	- When a node detects that a leader has become non-responsive, it switches to an intermediate state (called "candidate" in Raft) where it increments the term/epoch value by one, initiates a leader election and competes to become the new leader
+	- In order to be elected a leader, a node must receive a majority of the votes. One way to assign votes is to simply assign them on a first-come-first-served basis; this way, a leader will eventually be elected. Adding a random amount of waiting time between attempts at getting elected will reduce the number of nodes that are simultaneously attempting to get elected
+
+
+* Numbered proposals within an epoch
+	- Within each epoch, each proposal is numbered with a unique strictly increasing number
+	- During normal operation, all proposals go through the leader node. When a client submits a proposal, the leader contacts all nodes in the quorum. If no competing proposals exist, the leader proposes the value. If a majority of the followers accept the value, then the value is considered to be accepted
+	- If a proposal with value v is chosen, then every higher-numbered proposal that is chosen has value v
+		- Since it is possible that another node is also attempting to act as a leader, we need to ensure that once a single proposal has been accepted, its value can never change. Otherwise a proposal that has already been accepted might for example be reverted by a competing leader
+	- If a proposal with value v is chosen, then every higher-numbered proposal issued by any proposer has value v
+		- the proposers must first ask the followers for their (highest numbered) accepted proposal and value. If the proposer finds out that a proposal already exists, then it must simply complete this execution of the protocol, rather than making its own proposal
+	- For any v and n, if a proposal with value v and number n is issued by a leader, then there is a set S consisting of a majority of acceptors [followers] such that either (a) no acceptor in S has accepted any proposal numbered less than n, or (b) v is the value of the highest-numbered proposal among all proposals numbered less than n accepted by the followers in S
+		- The value to be proposed is not chosen until the second phase of the protocol. Proposers must sometimes simply retransmit a previously made decision to ensure safety until they reach a point where they know that they are free to impose their own proposal value 
+	
+	```
+	[ Proposer ] -> Prepare(n)                                [ Followers ]
+	             <- Promise(n; previous proposal number
+	                and previous value if accepted a
+	                proposal in the past)
+	
+	[ Proposer ] -> AcceptRequest(n, own value or the value   [ Followers ]
+	                associated with the highest proposal number
+	                reported by the followers)
+	                <- Accepted(n, value)
+	```
+	
+	- The prepare stage allows the proposer to learn of any competing or previous proposals. The second phase is where either a new value or a previously accepted value is proposed
+	- In some cases, such as if two proposers are active at the same time (dueling), or if messages are lost, or if a majority of the nodes have failed, then no proposal is accepted by a majority. But this is acceptable, since the decision rule for what value to propose converges towards a single value (the one with the highest proposal number in the previous attempt)
+	- According to the FLP impossibility result, this is the best we can do: algorithms that solve the consensus problem must either give up safety or liveness when the guarantees regarding bounds on message delivery do not hold. Paxos gives up liveness: it may have to delay decisions indefinitely until a point in time where there are no competing leaders, and a majority of nodes accept a proposal
+	
+
+* Partition-tolerant consensus algorithms: Paxos, Raft, ZAB
+	- Paxos is one of the most important algorithms when writing strongly consistent partition tolerant replicated systems. It is used in many of Google's systems, including the Chubby lock manager used by BigTable/Megastore, the Google File System as well as Spanner
+	- ZAB, the Zookeeper Atomic Broadcast protocol is used in Apache Zookeeper. Technically speaking atomic broadcast is a problem different from pure consensus, but it still falls under the category of partition tolerant algorithms that ensure strong consistency
+	- Raft is a recent (2013) addition to this family of algorithms. It is designed to be easier to teach than Paxos, while providing the same guarantees. In particular, the different parts of the algorithm are more clearly separated and the paper also describes a mechanism for cluster membership change
+
+
+##### Summary: replication methods with strong consistency
+
+* Primary/Backup
+	- Single, static master
+	- Replicated log, slaves are not involved in executing operations
+	- No bounds on replication delay
+	- Not partition tolerant
+	- Manual/ad-hoc failover, not fault tolerant, "hot backup"
+
+
+* 2PC
+	- Unanimous vote: commit or abort
+	- Static master
+	- 2PC cannot survive simultaneous failure of the coordinator and a node during a commit
+	- Not partition tolerant, tail latency sensitive
+
+
+* Paxos
+	- Majority vote
+	- Dynamic master
+	- Robust to n/2-1 simultaneous failures as part of protocol
+	- Less sensitive to tail latency
+
+
+##### Further reading
+
+* Primary-backup and 2PC
+	- Replication techniques for availability - Robbert van Renesse & Rachid Guerraoui, 2010
+	- Concurrency Control and Recovery in Database Systems
+
+
+* Paxos
+	- The Part-Time Parliament - Leslie Lamport
+	- Paxos Made Simple - Leslie Lamport, 2001
+	- Paxos Made Live - An Engineering Perspective - Chandra et al
+	- Paxos Made Practical - Mazieres, 2007
+	- Revisiting the Paxos Algorithm - Lynch et al
+	- How to build a highly available system with consensus - Butler Lampson
+	- Reconfiguring a State Machine - Lamport et al - changing cluster membership
+	- Implementing Fault-Tolerant Services Using the State Machine Approach: a Tutorial - Fred Schneider
+
+
+* Raft and ZAB
+	- In Search of an Understandable Consensus Algorithm, Diego Ongaro, John Ousterhout, 2013
+	- Raft Lecture - User Study
+	- A simple totally ordered broadcast protocol - Junqueira, Reed, 2008
+	- ZooKeeper Atomic Broadcast - Reed, 2011
 
 
 ### 5. Replication: accepting divergence

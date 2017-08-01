@@ -463,7 +463,54 @@
 	![Asynchronous_replication](imgs/dsffap_4_2.png)
 
 
-##### An overview of major replication approaches
+##### Replication algorithms that maintain single-copy consistency
+
+* Single copy consistency algorithms
+	- Replicated systems that maintain single copy consistency need to solve the consensus problem in some way. Mutual exclusion, leader election, multicast and atomic broadcast are all instances of the consensus problem
+	- The replication algorithms that maintain single-copy consistency include:
+		- 1n messages: asynchronous primary/backup
+		- 2n messages: synchronous primary/backup
+		- 4n messages: 2-phase commit, Multi-Paxos
+		- 6n messages: 3-phase commit, Paxos with repeated leader election
+	- These algorithms are simply classified by the number of messages exchanged during execution
+	- These algorithms vary in their fault tolerance, e.g. the types of faults they can tolerate 
+
+
+* Primary/backup replication
+	- Primary/backup replication also known as primary copy replication, master-slave replication, or log shipping
+	- All updates are performed on the primary and a log of operations is shipped across the network to the backup replicas. There are two variants:
+		- asynchronous primary/backup replication
+		- synchronous primary/backup replication
+	- The synchronous version requires two messages ("update" + "acknowledge receipt") while the asynchronous version could run with just one ("update")
+	- P/B is very common. For example, by default MySQL replication uses the asynchronous variant. MongoDB also uses P/B with some additional procedures for failover
+	- Asynchronous replication algorithm can only provide weak durability guarantees. In MySQL, the asynchronous backups are always at least one operation behind the primary. If the primary fails, then the updates that have not yet been sent to the backups are lost
+	- However, even synchronous variant can only offer weak guarantees. Consider the following simple failure scenario:
+		- the primary receives a write and sends it to the backup, the backup persists and ACKs the write and then primary fails before sending ACK to the client
+		- the client now assumes that the commit failed, but the backup committed it; if the backup is promoted to primary, it will be incorrect
+	- All primary/backup replication algorithms follow the same general messaging pattern, they differ in their handling of failover, replicas being offline for extended periods and so on. However, it is not possible to be resilient to inopportune failures of the primary in this scheme. 
+	- To prevent inopportune failures from causing consistency guarantees to be violated, we need to add another round of messaging, which gets us the two phase commit protocol (2PC)
+
+
+
+* Two phase commit (2PC)
+	- Two phase commit (2PC) is a protocol used in many classic relational databases. For example, MySQL Cluster provides synchronous replication using 2PC 
+	```
+	[ Coordinator ] -> OK to commit?     [ Peers ]
+                	<- Yes / No
+
+	[ Coordinator ] -> Commit / Rollback [ Peers ]
+	                <- ACK
+	```
+	- In the first phase (voting), the coordinator sends the update to all the participants. Each participant processes the update and votes whether to commit or abort. When voting to commit, the participants store the update onto a temporary area (the write-ahead log). Until the second phase completes, the update is considered temporary
+	- In the second phase (decision), the coordinator decides the outcome and informs every participant about it. If all participants voted to commit, then the update is taken from the temporary area and made permanent
+	- Having a second phase in place before the commit allows the system to roll back an update when a node fails. In contrast, in primary/backup ("1PC"), there is no step for rolling back an operation that has failed on some nodes and succeeded on others, and hence the replicas could diverge
+	- 2PC is prone to blocking, since a single node failure blocks progress until the node has recovered
+	- 2PC is a CA. It is not partition tolerant. The failure model that 2PC addresses does not include network partitions
+	- 2PC is also fairly latency-sensitive, since it is a write N-of-N approach in which writes cannot proceed until the slowest node acknowledges them
+	- 2PC has been popular in relational databases. However, newer systems often use a partition tolerant consensus algorithm, since such an algorithm can provide automatic recovery from temporary network partitions as well as more graceful handling of increased between-node latency
+
+
+##### Partition tolerant consensus algorithms
 
 xxx
 

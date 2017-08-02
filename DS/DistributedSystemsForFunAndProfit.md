@@ -93,8 +93,9 @@
 
 ##### Further Readings
 
-* [Fallacies of distributed computing](https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing)
-* [Notes on Distributed Systems for Young Bloods](https://www.somethingsimilar.com/2013/01/14/notes-on-distributed-systems-for-young-bloods/)
+* [The Datacenter as a Computer - An Introduction to the Design of Warehouse-Scale Machines](http://www.morganclaypool.com/doi/pdf/10.2200/s00193ed1v01y200905cac006) - Barroso & Hölzle, 2008
+* [Fallacies of Distributed Computing](https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing)
+* [Notes on Distributed Systems for Young Bloods](https://www.somethingsimilar.com/2013/01/14/notes-on-distributed-systems-for-young-bloods) - Hodges, 2013
 
 
 ### 2. Up and down the level of abstraction
@@ -248,13 +249,16 @@
 
 ##### Further readings
 
-* Impossibility of distributed consensus with one faulty process
-* Perspectives on the CAP Theorem 
-* [CAP Twelve Years Later: How the "Rules" Have Changed](https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed)
-* [Replicated Data Consistency Explained Through Baseball](http://pages.cs.wisc.edu/~remzi/Classes/739/Papers/Bart/ConsistencyAndBaseballReport.pdf)
-* [Life beyond Distributed Transactions: an Apostate’s Opinion](https://cs.brown.edu/courses/cs227/archives/2012/papers/weaker/cidr07p15.pdf)
+* [Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services](http://lpd.epfl.ch/sgilbert/pubs/BrewersConjecture-SigAct.pdf) - Gilbert & Lynch, 2002
+* [Impossibility of distributed consensus with one faulty process](https://scholar.google.com/scholar?q=Impossibility+of+distributed+consensus+with+one+faulty+process) - Fischer, Lynch and Patterson, 1985
+* [Perspectives on the CAP Theorem](https://scholar.google.com/scholar?q=Perspectives+on+the+CAP+Theorem) - Gilbert & Lynch, 2012
+* [CAP Twelve Years Later: How the "Rules" Have Changed](https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed) - Brewer, 2012
+* [Uniform consensus is harder than consensus](https://scholar.google.com/scholar?q=Uniform+consensus+is+harder+than+consensus) - Charron-Bost & Schiper, 2000
+* [Replicated Data Consistency Explained Through Baseball](http://pages.cs.wisc.edu/~remzi/Classes/739/Papers/Bart/ConsistencyAndBaseballReport.pdf) - Terry, 2011
+* [Life Beyond Distributed Transactions: an Apostate's Opinion](https://scholar.google.com/scholar?q=Life+Beyond+Distributed+Transactions%3A+an+Apostate%27s+Opinion) - Helland, 2007
+* [If you have too much data, then 'good enough' is good enough](http://dl.acm.org/citation.cfm?id=1953140) - Helland, 2011
+* [Building on Quicksand](https://scholar.google.com/scholar?q=Building+on+Quicksand) - Helland & Campbell, 2009
 
-	
 
 ### 3. Time and order
 
@@ -417,17 +421,17 @@
 ##### Further reading
 
 * Lamport clocks, vector clocks
-	- Time, Clocks and Ordering of Events in a Distributed System - Leslie Lamport, 1978
+	- [Time, Clocks and Ordering of Events in a Distributed System](http://lamport.azurewebsites.net/pubs/time-clocks.pdf) - Leslie Lamport, 1978
 * Failure detection
-	- Unreliable failure detectors and reliable distributed systems - Chandra and Toueg
-	- Latency- and Bandwidth-Minimizing Optimal Failure Detectors - So & Sirer, 2007
-	- The failure detector abstraction, Freiling, Guerraoui & Kuznetsov, 2011
+	- [Unreliable failure detectors and reliable distributed systems](https://scholar.google.com/scholar?q=Unreliable+Failure+Detectors+for+Reliable+Distributed+Systems) - Chandra and Toueg
+	- [Latency- and Bandwidth-Minimizing Optimal Failure Detectors](http://www.cs.cornell.edu/people/egs/sqrt-s/doc/TR2006-2025.pdf) - So & Sirer, 2007
+	- [The failure detector abstraction](https://scholar.google.com/scholar?q=The+failure+detector+abstraction) - Freiling, Guerraoui & Kuznetsov, 2011
 * Snapshots
-	- Consistent global states of distributed systems: Fundamental concepts and mechanisms, Ozalp Babaogly and Keith Marzullo, 1993
-	- Distributed snapshots: Determining global states of distributed systems, K. Mani Chandy and Leslie Lamport, 1985
+	- [Consistent global states of distributed systems: Fundamental concepts and mechanisms](https://scholar.google.com/scholar?q=Consistent+global+states+of+distributed+systems%3A+Fundamental+concepts+and+mechanisms) - Ozalp Babaogly and Keith Marzullo, 1993
+	- [Distributed snapshots: Determining global states of distributed systems](https://scholar.google.com/scholar?q=Distributed+snapshots%3A+Determining+global+states+of+distributed+systems) - K. Mani Chandy and Leslie Lamport, 1985
 * Causality
-	- Detecting Causal Relationships in Distributed Computations: In Search of the Holy Grail - Schwarz & Mattern, 1994
-	- Understanding the Limitations of Causally and Totally Ordered Communication - Cheriton & Skeen, 1993
+	- [Detecting Causal Relationships in Distributed Computations: In Search of the Holy Grail](http://www.vs.inf.ethz.ch/publ/papers/holygrail.pdf) - Schwarz & Mattern, 1994
+	- [Understanding the Limitations of Causally and Totally Ordered Communication](https://scholar.google.com/scholar?q=Understanding+the+limitations+of+causally+and+totally+ordered+communication) - Cheriton & Skeen, 1993
 
 
 ### 4. Replication: preventing divergence
@@ -604,26 +608,26 @@
 ##### Further reading
 
 * Primary-backup and 2PC
-	- Replication techniques for availability - Robbert van Renesse & Rachid Guerraoui, 2010
-	- Concurrency Control and Recovery in Database Systems
+	- [Replication techniques for availability](https://scholar.google.com/scholar?q=Replication+techniques+for+availability) - Robbert van Renesse & Rachid Guerraoui, 2010
+	- [Concurrency Control and Recovery in Database Systems](https://www.microsoft.com/en-us/research/people/philbe/?from=http%3A%2F%2Fresearch.microsoft.com%2Fen-us%2Fpeople%2Fphilbe%2Fccontrol.aspx)
 
 
 * Paxos
-	- The Part-Time Parliament - Leslie Lamport
-	- Paxos Made Simple - Leslie Lamport, 2001
-	- Paxos Made Live - An Engineering Perspective - Chandra et al
-	- Paxos Made Practical - Mazieres, 2007
-	- Revisiting the Paxos Algorithm - Lynch et al
-	- How to build a highly available system with consensus - Butler Lampson
-	- Reconfiguring a State Machine - Lamport et al - changing cluster membership
-	- Implementing Fault-Tolerant Services Using the State Machine Approach: a Tutorial - Fred Schneider
+	- [The Part-Time Parliament](http://lamport.azurewebsites.net/pubs/lamport-paxos.pdf) - Leslie Lamport
+	- [Paxos Made Simple](http://research.microsoft.com/users/lamport/pubs/paxos-simple.pdf) - Leslie Lamport, 2001
+	- [Paxos Made Live - An Engineering Perspective](https://research.google.com/archive/paxos_made_live.html) - Chandra et al
+	- [Paxos Made Practical](https://scholar.google.com/scholar?q=Paxos+Made+Practical) - Mazieres, 2007
+	- [Revisiting the Paxos Algorithm](http://groups.csail.mit.edu/tds/paxos.html) - Lynch et al
+	- [How to build a highly available system with consensus](http://research.microsoft.com/lampson/58-Consensus/Acrobat.pdf) - Butler Lampson
+	- [Reconfiguring a State Machine](https://www.microsoft.com/en-us/research/publication/reconfiguring-a-state-machine/?from=http%3A%2F%2Fresearch.microsoft.com%2Fen-us%2Fum%2Fpeople%2Flamport%2Fpubs%2Freconfiguration-tutorial.pdf) - Lamport et al - changing cluster membership
+	- [Implementing Fault-Tolerant Services Using the State Machine Approach: a Tutorial](http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.20.4762) - Fred Schneider
 
 
 * Raft and ZAB
-	- In Search of an Understandable Consensus Algorithm, Diego Ongaro, John Ousterhout, 2013
-	- Raft Lecture - User Study
-	- A simple totally ordered broadcast protocol - Junqueira, Reed, 2008
-	- ZooKeeper Atomic Broadcast - Reed, 2011
+	- [In Search of an Understandable Consensus Algorithm](https://ramcloud.stanford.edu/wiki/download/attachments/11370504/raft.pdf) - Diego Ongaro, John Ousterhout, 2013
+	- [Raft Lecture - User Study](https://www.youtube.com/watch?v=YbZ3zDzDnrw)
+	- [A simple totally ordered broadcast protocol]() - Junqueira, Reed, 2008
+	- [ZooKeeper Atomic Broadcast]() - Reed, 2011
 
 
 ### 5. Replication: accepting divergence

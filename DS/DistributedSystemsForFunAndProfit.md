@@ -632,5 +632,138 @@
 
 ### 5. Replication: accepting divergence
 
+#####  weak consistency
+
+* Why weak consistency
+	- A system enforcing strong consistency doesn't behave like a distributed system: it behaves like a single system, which is bad for availability during a partition
+	- For each operation in strong consistency system, often a majority of the nodes must be contacted, and often not just once, but twice. This is particularly painful in systems that need to be geographically distributed to provide adequate performance for a global user base 
+	- Perhaps what we want is a system that doesn't use expensive coordination and returns a "usable" value. Instead of having a single truth, we will allow different replicas to diverge from each other, both to keep things efficient but also to tolerate partitions, and then try to find a way to deal with the divergence in some manner
+	- Eventual consistency expresses this idea: that nodes can for some time diverge from each other, but that eventually they will agree on the value
+
+
+* Within the set of systems providing eventual consistency, there are two types of system designs:
+	- Eventual consistency with probabilistic guarantees
+		- This type of system can detect conflicting writes at some later point, but does not guarantee that the results are equivalent to some correct sequential execution
+		- e.g. Amazon's Dynamo
+	- Eventual consistency with strong guarantees 
+		- This type of system guarantees that the results converge to a common value equivalent to some correct sequential execution
+		- without any coordination you can build replicas of the same service, and those replicas can communicate in any pattern and receive the updates in any order, and they will eventually agree on the end result as long as they all see the same information
+		- CRDT's (convergent replicated data types) are data types that guarantee convergence to the same value in spite of network delays, partitions and message reordering. They are provably convergent, but the data types that can be implemented as CRDT's are limited
+		- The CALM (consistency as logical monotonicity) conjecture is an alternative expression of the same principle: it equates logical monotonicity with convergence. If we can conclude that something is logically monotonic, then it is also safe to run without coordination
+
+
+##### Amazon's Dynamo
+
+* Dynamo
+	- Amazon's Dynamo system design (2007) is probably the best-known system that offers weak consistency guarantees but high availability. It is the basis for many other real world systems, including LinkedIn's Voldemort, Facebook's Cassandra and Basho's Riak
+	- Dynamo is an eventually consistent, highly available key-value store
+	- Dynamo prioritizes availability over consistency; it does not guarantee single-copy consistency. Instead, replicas may diverge from each other when values are written; when a key is read, there is a read reconciliation phase that attempts to reconcile differences between replicas before returning the value back to the client
+	- For many features on Amazon, it is more important to avoid outages than it is to ensure that data is perfectly consistent, as an outage can lead to lost business and a loss of credibility. Furthermore, if the data is not particularly important, then a weakly consistent system can provide better performance and higher availability at a lower cost than a traditional RDBMS
+	
+
+* Consistent hashing
+	- In Dynamo, keys are mapped to nodes using a hashing technique known as consistent hashing
+	- The main idea is that a key can be mapped to a set of nodes responsible for it by a simple calculation on the client. This means that a client can locate keys without having to query the system for the location of each key; this saves system resources as hashing is generally faster than performing a remote procedure call
+
+
+* Partial quorums
+	- A strict quorum system is a quorum system with the property that any two quorums (sets) in the quorum system overlap. Requiring a majority to vote for an update before accepting it guarantees that only a single history is admitted since each majority quorum must overlap in at least one node. This was the property that Paxos, for example, relied on
+	- With partial quorums, a majority is not required and different subsets of the quorum may contain different versions of the same data. The user can choose the number of nodes to write to and read from:
+		- the user can choose some number W-of-N nodes required for a write to succeed; and
+		- the user can specify the number of nodes (R-of-N) to be contacted during a read  
+	- W and R specify the number of nodes that need to be involved to a write or a read. Writing to more nodes makes writes slightly slower but increases the probability that the value is not lost; reading from more nodes increases the probability that the value read is up to date
+	- The usual recommendation is that R + W > N, because this means that the read and write quorums overlap in one node - making it less likely that a stale value is returned
+		- R = 1, W = N: fast reads, slow writes
+		- R = N, W = 1: fast writes, slow reads
+		- R = N/2 and W = N/2 + 1: favorable to both
+	- Other similar designs inspired by Dynamo paper all use the same partial quorum based replication approach, but with different defaults for N, W and R:
+		- Basho's Riak (N = 3, R = 2, W = 2 default)
+		- Linkedin's Voldemort (N = 2 or 3, R = 1, W = 1 default)
+		- Apache's Cassandra (N = 3, R = 1, W = 1 default)
+	- N is rarely more than 3, because keeping that many copies of large amounts of data around gets expensive
+
+
+* Conflict detection and read repair
+	- Systems that allow replicas to diverge must have a way to eventually reconcile two different values
+	- One way to do this is to detect conflicts at read time, and then apply some conflict resolution method
+	- Clients must keep the metadata information when they read data from the system, and must return back the metadata value when writing to the database
+	- The original Dynamo design uses vector clocks for detecting conflicts. Options of metadata:
+		- No metadata. cannot really do anything special about concurrent writes; the last writer wins 
+		- Timestamps. The value with the higher timestamp value wins. Time may not carefully be synchronized. Facebook's Cassandra uses timestamps instead of vector clocks
+		- Version numbers. Version numbers may avoid some of the issues related with using timestamps. Note that the smallest mechanism that can accurately track causality when multiple histories are possible are vector clocks, not version numbers
+		- Vector clocks. Using vector clocks, concurrent and out of date updates can be detected. Performing read repair then becomes possible, though in some cases (concurrent changes) we need to ask the client to pick a value. This is because if the changes are concurrent and we know nothing more about the data (as is the case with a simple key-value store), then it is better to ask than to discard data arbitrarily
+	- When reading a value, the client contacts R of N nodes and asks them for the latest value for a key. It takes all the responses, discards the values that are strictly older (using the vector clock value to detect this). If there is only one unique vector clock + value pair, it returns that. If there are multiple vector clock + value pairs that have been edited concurrently (e.g. are not comparable), then all of those values are returned
+	
+
+* Replica synchronization: gossip and Merkle trees
+	- Replica synchronization is used to bring nodes up to date after a failure, and for periodically synchronizing replicas with each other
+	- **Gossip** is a probabilistic technique for synchronizing replicas. Gossip is scalable and has no single point of failure, but can only provide probabilistic guarantees
+	- In order to make the information exchange during replica synchronization efficient, Dynamo uses a technique called Merkle trees 
+		- The key idea is that a data store can be hashed at multiple different levels of granularity: a hash representing the whole content, half the keys, a quarter of the keys and so on
+		- By maintaining this fairly granular hashing, nodes can compare their data store content much more efficiently
+		- Once the nodes have identified which keys have different values, they exchange the necessary information to bring the replicas up to date
+	
+
+* Summary of Dynamo system design:
+	- Consistent hashing to determine key placement
+	- Partial quorums for reading and writing
+	- Conflict detection and read repair via vector clocks
+	- Gossip for replica synchronization
+
+
+##### Disorderly programming
+
+* operation-centric work can be made commutative where a simple READ/WRITE semantic does not lend itself to commutativity
+	- Consider a system that implements a simple accounting system with the debit and credit operations in two different ways:
+		- using a register with read and write operations, and
+		- using a integer data type with native debit and credit operations 
+	- The latter implementation knows more about the internals of the data type, and so it can preserve the intent of the operations in spite of the operations being reordered. Debiting or crediting can be applied in any order, and the end result is the same
+	```
+	100 + credit(10) + credit(20) = 130
+	100 + credit(20) + credit(10) = 130
+	```
+	- However, writing a fixed value cannot be done in any order: if writes are reordered, the one of the writes will overwrite the other
+	```
+	100 + write(110) + write(130) = 130
+	100 + write(130) + write(110) = 110
+	```
+	- If we know that the data is of a more specific type, handling these kinds of conflicts becomes possible. CRDT's are data structures designed to provide data types that will always converge, as long as they see the same set of operations in any order
+
+
+* CRDTs: Convergent replicated data types
+	- CRDTs exploit knowledge regarding the commutativity and associativity of specific operations on specific datatypes 
+	- In order for a set of operations to converge on the same value in an environment where replicas only communicate occasionally, the operations need to be order-independent and insensitive to message duplication/redelivery. Thus, their operations need to be:
+		- Associative (a+(b+c)=(a+b)+c), so that grouping doesn't matter
+		- Commutative (a+b=b+a), so that order of application doesn't matter
+		- Idempotent (a+a=a), so that duplication does not matter
+	- These structures are already known in mathematics as join or meet semilattices
+	- Any data type that be expressed as a semilattice can be implemented as a data structure which guarantees convergence. For example, calculating the max() of a set of values will always return the same result regardless of the order in which the values were received, as long as all values are eventually received
+	- However, expressing a data type as a semilattice often requires some level of interpretation. Many data types have operations which are not in fact order-independent. 
+		- For example, adding items to a set is associative, commutative and idempotent. However, if we also allow items to be removed from a set, then we need some way to resolve conflicting operations, such as add(A) and remove(A). What does it mean to remove an element if the local replica never added it? This resolution has to be specified in a manner that is order-independent, and there are several different choices with different tradeoffs
+	- This means that several familiar data types have more specialized implementations as CRDT's which make a different tradeoff in order to resolve conflicts in an order-independent manner
+
+
+* Examples of the different data types specified as CRDT's:
+	- Counters
+		- Grow-only counter (merge = max(values); payload = single integer)
+		- Positive-negative counter (consists of two grow counters, one for increments and another for decrements)
+	- Registers
+		- Last Write Wins register (timestamps or version numbers; merge = max(ts); payload = blob)
+		- Multi-valued register (vector clocks; merge = take both)
+	- Sets
+		- Grow-only set (merge = union(items); payload = set; no removal)
+		- Two-phase set (consists of two sets, one for adding, and another for removing; elements can be added once and removed once)
+		- Unique set (an optimized version of the two-phase set)
+		- Last write wins set (merge = max(ts); payload = set)
+		- Positive-negative set (consists of one PN-counter per set item)
+		- Observed-remove set 
+
+
+##### The CALM theorem
+
+	
+
+
+
 
 

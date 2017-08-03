@@ -647,9 +647,53 @@
 		- e.g. Amazon's Dynamo
 	- Eventual consistency with strong guarantees 
 		- This type of system guarantees that the results converge to a common value equivalent to some correct sequential execution
-		- without any coordination you can build replicas of the same service, and those replicas can communicate in any pattern and receive the updates in any order, and they will eventually agree on the end result as long as they all see the same information
+		- Without any coordination you can build replicas of the same service, and those replicas can communicate in any pattern and receive the updates in any order, and they will eventually agree on the end result as long as they all see the same information
 		- CRDT's (convergent replicated data types) are data types that guarantee convergence to the same value in spite of network delays, partitions and message reordering. They are provably convergent, but the data types that can be implemented as CRDT's are limited
 		- The CALM (consistency as logical monotonicity) conjecture is an alternative expression of the same principle: it equates logical monotonicity with convergence. If we can conclude that something is logically monotonic, then it is also safe to run without coordination
+
+
+* Example 1
+	- Imagine a system of three replicas, each of which is partitioned from the others. For example, the replicas might be in different datacenters and for some reason unable to communicate. 
+	- Each replica remains available during the partition, accepting both reads and writes from some set of clients
+	```
+	[Clients]   - > [A]
+
+	--- Partition ---
+	
+	[Clients]   - > [B]
+	
+	--- Partition ---
+	
+	[Clients]   - > [C]
+	```
+	- After some time, the partitions heal and the replica servers exchange information. They have received different updates from different clients and have diverged each other, so some sort of reconciliation needs to take place. What we would like to happen is that all of the replicas converge to the same result
+	```
+	[A] \
+	    --> [merge]
+	[B] /     |
+	          |
+	[C] ----[merge]---> result
+	```
+
+
+* Example 2
+	- Imagine a set of clients sending messages to two replicas in some order. Because there is no coordination protocol that enforces a single total order, the messages can get delivered in different orders at the two replicas
+	```
+	[Clients]  --> [A]  1, 2, 3
+	[Clients]  --> [B]  2, 3, 1
+	```
+	- This is, in essence, the reason why we need coordination protocols. For example, assume that we are trying to concatenate a string and the operations in messages 1, 2 and 3 are
+	```
+	1: { operation: concat('Hello ') }
+	2: { operation: concat('World') }
+	3: { operation: concat('!') }
+	```
+	- Then, without coordination, A will produce "Hello World!", and B will produce "World!Hello ".
+	```
+	A: concat(concat(concat('', 'Hello '), 'World'), '!') = 'Hello World!'
+	B: concat(concat(concat('', 'World'), '!'), 'Hello ') = 'World!Hello '
+	```
+	- This is, of course, incorrect. Again, what we'd like to happen is that the replicas converge to the same result
 
 
 ##### Amazon's Dynamo
@@ -711,9 +755,10 @@
 	- Gossip for replica synchronization
 
 
-##### Disorderly programming
+##### CRDTs
 
-* operation-centric work can be made commutative where a simple READ/WRITE semantic does not lend itself to commutativity
+* Disorderly programming
+	- operation-centric work can be made commutative where a simple READ/WRITE semantic does not lend itself to commutativity
 	- Consider a system that implements a simple accounting system with the debit and credit operations in two different ways:
 		- using a register with read and write operations, and
 		- using a integer data type with native debit and credit operations 
@@ -736,7 +781,7 @@
 		- Associative (a+(b+c)=(a+b)+c), so that grouping doesn't matter
 		- Commutative (a+b=b+a), so that order of application doesn't matter
 		- Idempotent (a+a=a), so that duplication does not matter
-	- These structures are already known in mathematics as join or meet semilattices
+	- These structures are already known in mathematics as join or meet **semilattices**
 	- Any data type that be expressed as a semilattice can be implemented as a data structure which guarantees convergence. For example, calculating the max() of a set of values will always return the same result regardless of the order in which the values were received, as long as all values are eventually received
 	- However, expressing a data type as a semilattice often requires some level of interpretation. Many data types have operations which are not in fact order-independent. 
 		- For example, adding items to a set is associative, commutative and idempotent. However, if we also allow items to be removed from a set, then we need some way to resolve conflicting operations, such as add(A) and remove(A). What does it mean to remove an element if the local replica never added it? This resolution has to be specified in a manner that is order-independent, and there are several different choices with different tradeoffs
@@ -761,9 +806,48 @@
 
 ##### The CALM theorem
 
-	
+* Programming models of order-independence
+	- There are many programming models in which the order of statements does not play a significant role 
+	- In the MapReduce model, both the Map and the Reduce tasks are specified as stateless tuple-processing tasks that need to be run on a dataset. Concrete decisions about how and in what order data is routed to the tasks is not specified explicitly
+	- In SQL one specifies the query, but not how the query is executed. The query is simply a declarative description of the task, and it is the job of the query optimizer to figure out an efficient way to execute the query (across multiple machines, databases and tables)
+	- There are many kinds of data processing tasks which are expressed in a declarative language where the order of execution is not explicitly specified
+	- Programming models which express a desired result while leaving the exact order of statements up to an optimizer to decide often have semantics that are order-independent. 
+	- Such programs may be possible to execute without coordination, since they depend on the inputs they receive but not necessarily the specific order in which the inputs are received
 
 
+* The CALM theorem
+	- The CALM theorem is based on a recognition of the link between logical monotonicity and useful forms of eventual consistency (e.g. confluence / convergence). It states that logically monotonic programs are guaranteed to be eventually consistent
+	- Both basic Datalog and relational algebra are known to be monotonic. More specifically, computations expressed using a certain set of basic operators are known to be monotonic: selection, projection, natural join, cross product, union and recursive Datalog without negation. Any computations using these operators are monotonic and thus safe to run without coordination
+	- Non-monotonicity is introduced by using more advanced operators: negation, set difference, division, universal quantification, aggregation. Expressions that make use of negation and aggregation are not safe to run without coordination
+
+
+* The Bloom language
+	- The Bloom language is a language designed to make use of the CALM theorem. It is a Ruby DSL which has its formal basis in a temporal logic programming language called Dedalus
+	- In Bloom, each node has a database consisting of collections and lattices. Programs are expressed as sets of unordered statements which interact with collections (sets of facts) and lattices (CRDTs). Statements are order-independent by default, but one can also write non-monotonic functions
+
+
+##### Further reading
+
+* The CALM theorem, confluence analysis and Bloom
+	- [The Declarative Imperative: Experiences and Conjectures in Distributed Logic](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2010/EECS-2010-90.pdf) - Hellerstein, 2010
+	- [Consistency Analysis in Bloom: a CALM and Collected Approach](http://db.cs.berkeley.edu/papers/cidr11-bloom.pdf) - Alvaro et al., 2011
+	- [Logic and Lattices for Distributed Programming](http://db.cs.berkeley.edu/papers/UCB-lattice-tr.pdf) - Conway et al., 2012
+	- [Dedalus: Datalog in Time and Space](http://db.cs.berkeley.edu/papers/datalog2011-dedalus.pdf) - Alvaro et al., 2011
+
+
+* CRDTs
+	- [CRDTs: Consistency Without Concurrency Control](https://hal.archives-ouvertes.fr/file/index/docid/397981/filename/RR-6956.pdf) - Letitia et al., 2009
+	- [A comprehensive study of Convergent and Commutative Replicated Data Types](https://hal.inria.fr/file/index/docid/555588/filename/techreport.pdf) - Shapiro et al., 2011
+	- [An Optimized conflict-free Replicated Set](https://arxiv.org/pdf/1210.3368v1.pdf) - Bieniusa et al., 2012
+
+
+* Dynamo; PBS; optimistic replication
+	- [Dynamo: Amazon’s Highly Available Key-value Store](http://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf) - DeCandia et al., 2007
+	- [PNUTS: Yahoo!'s Hosted Data Serving Platform](http://scholar.google.com/scholar?q=PNUTS:+Yahoo!%27s+Hosted+Data+Serving+Platform) - Cooper et al., 2008
+	- [The Bayou Architecture: Support for Data Sharing among Mobile Users](http://scholar.google.com/scholar?q=The+Bayou+Architecture%3A+Support+for+Data+Sharing+among+Mobile+Users) - Demers et al. 1994
+	- [Probabilistically Bound Staleness for Practical Partial Quorums](http://pbs.cs.berkeley.edu/pbs-vldb2012.pdf) - Bailis et al., 2012
+	- [Eventual Consistency Today: Limitations, Extensions, and Beyond](https://queue.acm.org/detail.cfm?id=2462076) - Bailis & Ghodsi, 2013
+	- [Optimistic replication]() - Saito & Shapiro, 2005
 
 
 

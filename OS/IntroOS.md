@@ -120,6 +120,78 @@
 	- Process: state of a program, loaded in memory when executing, active entity
 
 
+* Process address space
+
+	![vm1](imgs/introOS_2_1.png)
+	
+	![vm1](imgs/introOS_2_2.png)
+
+
+* How does the OS know what a process is doing?
+	- Program Counter
+	- CPU registers
+	- Stack pointer
+	- PCB: Process Control Block
+
+
+* Process Control Block
+	- created when process is created
+	- certain fields are updated when process state changes
+	
+	![PCB](imgs/introOS_2_3.png)
+
+
+* Context switch
+	- switching the CPU from  the context of one process to the context of another
+	- expensive:
+		- direct costs: number of cycles for load & store instructions
+		- indirect costs: cold cache, cache misses
+
+	![context_switch](imgs/introOS_2_4.png)
+	
+
+* Process life cycle
+
+	![process_life_cycle](imgs/introOS_2_5.png)
+
+
+* Process creation
+	- fork
+		- copies the parent PCB into new PCB
+		- child continues execution at instruction after fork
+	- exec
+		- replace child image
+		- load new program and start from first instruction
+
+
+* CPU scheduler
+	
+	![CPU_scheduler_1](imgs/IntroOS_2_6.png)
+
+	![CPU_scheduler_2](imgs/IntroOS_2_7.png)
+
+
+* Process interact
+	- Inter Process Communication (IPC) Mechanisms
+		- transfer data/info between address spaces
+		- maintain protection and isolation
+		- provide flexibility and performance
+	- Message-passing IPC
+	- Shared memory IPC
+
+	![process_interact](imgs/IntroOS_2_8.png)
+
+	![process_interact](imgs/IntroOS_2_9.png)
+
+
+*  Summary
+	- Process and process-related abstrctions: address space and PCB
+	- Basic mechanisms for managing process resources
+		- context switching
+		- process creation
+		- scheduling
+		- inter-process communication 
+
 
 ### 3. Threads and Concurrency
 

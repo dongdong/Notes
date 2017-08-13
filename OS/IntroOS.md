@@ -122,23 +122,23 @@
 
 * Process address space
 
-	![vm1](imgs/introOS_2_1.png)
+	![vm1](imgs/IntroOS_2_1.png)
 	
-	![vm1](imgs/introOS_2_2.png)
+	![vm1](imgs/IntroOS_2_2.png)
 
 
 * How does the OS know what a process is doing?
 	- Program Counter
 	- CPU registers
 	- Stack pointer
-	- PCB: Process Control Block
+	- ...
 
 
-* Process Control Block
+* PCB: Process Control Block
 	- created when process is created
 	- certain fields are updated when process state changes
 	
-	![PCB](imgs/introOS_2_3.png)
+	![PCB](imgs/IntroOS_2_3.png)
 
 
 * Context switch
@@ -147,12 +147,12 @@
 		- direct costs: number of cycles for load & store instructions
 		- indirect costs: cold cache, cache misses
 
-	![context_switch](imgs/introOS_2_4.png)
+	![context_switch](imgs/IntroOS_2_4.png)
 	
 
 * Process life cycle
 
-	![process_life_cycle](imgs/introOS_2_5.png)
+	![process_life_cycle](imgs/IntroOS_2_5.png)
 
 
 * Process creation
@@ -165,19 +165,30 @@
 
 
 * CPU scheduler
-	
-	![CPU_scheduler_1](imgs/IntroOS_2_6.png)
+	- A CPU scheduler determines *which one* of the currently ready processes will be *dispatched* to the CPU to start running, and for *how long* it should run
+	- OS must be efficiently
+		- preempt: interrupt and save current context
+		- schedule: run scheduler to choose next process
+		- dispatch: dispatch a process & switch into its context
+	- Scheduling design desions
+		- what are appropriate timeslice values
+		- metrics to choose next process to run
 
 	![CPU_scheduler_2](imgs/IntroOS_2_7.png)
 
 
-* Process interact
+* Processes interact
 	- Inter Process Communication (IPC) Mechanisms
 		- transfer data/info between address spaces
 		- maintain protection and isolation
 		- provide flexibility and performance
 	- Message-passing IPC
+		- OS provides communication channel, like shared buffer
+		- processes write(send)/read(recv) messages to/from channel
 	- Shared memory IPC
+		- OS establishes a shared channel and maps it into each process address space
+		- processes directly read/write from this memory
+		- OS is out of the way
 
 	![process_interact](imgs/IntroOS_2_8.png)
 

@@ -110,8 +110,8 @@
 
 * Preview
 	- What is a process
-	- How are processes represented by OS?
-	- How are multiple concurrent processes managed by OS?
+	- How are processes represented by OS
+	- How are multiple concurrent processes managed by OS
 
 
 * What is a process
@@ -174,7 +174,7 @@
 		- what are appropriate timeslice values
 		- metrics to choose next process to run
 
-	![CPU_scheduler_2](imgs/IntroOS_2_7.png)
+	![CPU_scheduler_2](imgs/IntroOS_2_6.png)
 
 
 * Processes interact
@@ -190,9 +190,9 @@
 		- processes directly read/write from this memory
 		- OS is out of the way
 
-	![process_interact](imgs/IntroOS_2_8.png)
+	![process_interact](imgs/IntroOS_2_7.png)
 
-	![process_interact](imgs/IntroOS_2_9.png)
+	![process_interact](imgs/IntroOS_2_8.png)
 
 
 *  Summary
@@ -206,6 +206,156 @@
 
 ### 3. Threads and Concurrency
 
+* Preview
+	- Whare are threads
+	- How threads different from processes
+	- What data structure are used to implement and manage threads
+
+
+* Paper: "An Introduction to Programming with Threads" by Birrell
+	- Threads and concurrency
+	- Basic mechanisms for multithreaded systems
+	- Synchronization  
+
+
+* Process vs. Thread
+
+	![thread](imgs/IntroOS_3_1.png)
+
+	![thread_process](imgs/IntroOS_3_2.png)
+
+
+* Why are theads useful
+	- parallelization => speed up
+	- specialization => hot cache
+	- efficiency: lower mm requirement & cheaper IPC (compared to multi-process)
+
+
+* Multi-threaded OS kernel
+	- threads working on behalf of apps
+	- OS-level services like daemons or drivers 
+
+	![kernel_thread](imgs/IntroOS_3_3.png)
+
+
+* Basic thread mechanisms
+	- thread data structure: identify threads, keep track of resource usage
+	- mechanisms to create and manage threads
+	- mechanisms to safely coordinate among threads running concurrently in the same  address space
+
+
+* Concurrency control & Coordination
+	- mutual exclusion
+		- exclusive access to only one thread at a time
+		- mutex
+	- waiting on other threads
+		- specify condition before proceeding
+		- condition variable
+	- waking up other threads from wait state
+
+
+* Thread creation
+	
+	![thread_creation](imgs/IntroOS_3_4.png)
+
+
+* Mutual exclusion
+
+	![mutual_exclusion](imgs/IntroOS_3_5.png)
+
+
+* Condition variable
+	- Wait(mutex, cond)
+		- mutex is automatically released and re-aquired on wait
+	- Signal(cond)
+		- notify only one thread waiting on condition
+	- Broadcast(cond)
+		- notify all waiting threads
+
+	```
+	// consumer: print and clear
+	Lock(m) {
+		while (my_list.not_full())
+			Wait(m, list_full)
+		my_list.print_and_remove_all();
+	} // unlock;
+
+	// producers: safe_insert
+	Lock(m) {
+		my_list.insert(my_thread_id);
+		if (my_list.full())
+			Signal(list_full);
+	} // unlock;
+	```
+
+	- why use "while" rather than "if"
+		- "while" can support multiple consumer threads
+		- cannot guarantee access to m once the condition is signaled
+		- the list can change before the consumer gets access again
+
+
+* Reader/Writer Problem
+	- rules:
+		- reader: 0 or more access
+		- writer: 0 or 1 access
+	- condition:
+		- if (read.counter == 0 and write.conter == 0) then R=ok, W=ok 
+		- if (read.counter > 0) then R=ok, W=no
+		- if (write.counter == 1) then R=no, w=no
+	- state of shared resource:
+		- free: resource.counter = 0
+		- reading: resource.counter > 0
+		- writing: resource.counter = -1
+	
+	![reader_writer](imgs/IntroOS_3_6.png)
+
+
+* Critical section structure
+	- typical critical section structure
+	```
+	Lock (mutex) {
+		while (!predicate_indicating_access_ok)
+			Wait(mutex, cond_var)
+		update state => update predicate
+		Signal/Broadcast(cond_var_with_correct_waiting_threads)
+	}
+	```
+	- critical section structure with proxy variable, e.g. Reader/Writer
+	```
+	// ENTER CRITICAL SECTION
+	Lock (mutex) {
+		while (!predicate_for_access)
+			Wait(mutex, cond_var)
+		update predicate;
+	} // unlock
+
+	// CRITICAL_OPERATION
+	perform_critical_operation(read/write_shared_file)
+
+	// EXIT CRITICAL SECTION
+	LOCK(mutex) {
+		update predicate;
+		Signal/Broadcast(cond_var);
+	} // unlock
+	```
+
+
+* Avoiding Common mistakes
+	- keep track of mutex/cond variables used with a resource
+	- check that you are always using lock & unlock correctly 
+	- use a single mutex to access a single resource 
+	- check that you are signaling correct condition
+	- check that you are not using signal when broadcast is needed
+	- ask yourself: do you need priority guarantees? 
+		- thread execution order not controlled by signals to condition variables
+	- aware of spurious wakeup
+	- avoid deadlocks 
+
+
+* Spurious wake up
+
+
+* Dead lock
 
 
 ### 4. PThreads

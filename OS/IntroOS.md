@@ -275,16 +275,16 @@
 	```
 	// consumer: print and clear
 	Lock(m) {
-		while (my_list.not_full())
-			Wait(m, list_full)
-		my_list.print_and_remove_all();
+	    while (my_list.not_full())
+	        Wait(m, list_full)
+	    my_list.print_and_remove_all();
 	} // unlock;
 
 	// producers: safe_insert
 	Lock(m) {
-		my_list.insert(my_thread_id);
-		if (my_list.full())
-			Signal(list_full);
+	    my_list.insert(my_thread_id);
+	    if (my_list.full())
+	        Signal(list_full);
 	} // unlock;
 	```
 
@@ -314,19 +314,19 @@
 	- typical critical section structure
 	```
 	Lock (mutex) {
-		while (!predicate_indicating_access_ok)
-			Wait(mutex, cond_var)
-		update state => update predicate
-		Signal/Broadcast(cond_var_with_correct_waiting_threads)
+	    while (!predicate_indicating_access_ok)
+	        Wait(mutex, cond_var)
+	    update state => update predicate
+	    Signal/Broadcast(cond_var_with_correct_waiting_threads)
 	}
 	```
 	- critical section structure with proxy variable, e.g. Reader/Writer
 	```
 	// ENTER CRITICAL SECTION
 	Lock (mutex) {
-		while (!predicate_for_access)
-			Wait(mutex, cond_var)
-		update predicate;
+	    while (!predicate_for_access)
+	        Wait(mutex, cond_var)
+	    update predicate;
 	} // unlock
 
 	// CRITICAL_OPERATION
@@ -334,8 +334,8 @@
 
 	// EXIT CRITICAL SECTION
 	LOCK(mutex) {
-		update predicate;
-		Signal/Broadcast(cond_var);
+	    update predicate;
+	    Signal/Broadcast(cond_var);
 	} // unlock
 	```
 

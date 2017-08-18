@@ -494,9 +494,210 @@
 	![layered](imgs/IntroOS_3_11.png)
 
 
+* Summary
+	- What are threads? How and why do we use them?
+	- Thread mechanisms
+		- mutexes, condition variables
+	- Using threads
+		- problems, solutions and design approaches
+
 
 ### 4. PThreads
 
+* Preview
+	- PThread: POSIX Thread
+	- POSIX: Portable Operating System Interface
+	- POSIX Threads
+		- POSIX version of Birrell's API
+		- Specifies syntax and semantics of the operations
+
+
+* PThread creation
+	
+	```
+	pthread_t aThread;  // type of thread
+	int pthread_create(pthread_t* thread, 
+	    const pthread_attr_t* attr,
+	    void* (*start_routine)(void*),
+	    void* arg);
+	int pthread_join(pthread_t thread, void** status);
+	```
+
+
+* PThread attributes
+	- pthread_attr_t
+	- specified in pthread_create
+	- defines features of the new thread
+		- static size
+		- inheritance
+		- joinable
+		- scheduling policy
+		- priority
+		- system/process scope
+	- has default behavior with NULL in pthread_create 
+
+	```
+	int pthread_attr_init(pthread_attr_t* attr);
+	int pthread_attr_destory(pthread_attr_t* attr);
+	pthread_attr_{set/get}{attribute}
+	```
+	
+	```
+	#include <stdio.h>
+	#include <pthread.h>
+	
+	void* foo(void* arg) {
+	    printf("Foobar!\n");
+	    pthread_exit(NULL);
+	}
+	
+	int main(void) {
+	    int i;
+	    pthread_t tid;
+	    
+	    pthread_attr_t attr;
+	    pthread_attr_init(&attr);
+	    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	    pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+	    pthread_create(&tid, &attr, foo, NULL);
+	}	
+	```
+	
+	```
+	#include <stdio.h>
+	#include <pthread.h>
+	#define NUM_THREADS 4
+	
+	void* hello(void* arg) {
+	    printf("Hello Thread\n");
+	    return 0;
+	}
+	
+	int main(void) {
+	    int i;
+	    pthread_t tid[NUM_THREADS];
+	    for (i = 0; i < NUM_THREADS; i++) {
+	        pthread_create(&tid[i], NULL, hello, NULL);
+	    }
+	    for (i = 0; i < NUM_THREADS; i++) {
+	        pthread_join(tid[i], NULL);
+	    }
+	    return 0;
+	}	
+	```
+
+
+* PThread mutexes
+	
+	```
+	pthread_mutex_t aMutexl;  // mutex type
+	int pthread_mutex_lock(pthread_mutex_t* mutex);
+	int pthread_mutex_unlock(pthread_mutex_t* mutex);
+	int pthread_mutex_trylock(pthread_mutex_t* mutex);
+	int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t* attr);
+	int pthread_mutex_destroy(pthread_mutex_t* mutex);
+	```
+
+
+* PThread condition variables
+
+	```
+	pthread_cond_t aCond;  // type of cond variable
+	int pthread_cond_wait(pthread_cond_t* cond, pthread_mutex_t* mutex);
+	int pthread_cond_signal(pthread_cond_t* cond);
+	int pthread_cond_broadcast(pthread_cond_t* cond);
+	int pthread_cond_init(pthread_cond_t* cond, const pthread_condattr_t * attr);
+	int pthread_cond_destroy(pthread_cond_t* cond);
+	```
+
+
+* Producer and consumer example
+
+	```
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <pthread.h>
+	
+	#define BUF_SIZE 3
+	
+	int buffer[BUF_SIZE];  // shared buffer
+	int add = 0;           // place to add next element
+	int rem = 0;           // place to remove next element
+	int num = 0;           // number of elements in buffer
+	
+	pthread_mutex_t m = PTHREAD_MUTEXT_INITIALIZER;
+	pthread_cond_t c_cons = PTHREAD_COND_INITIALIZER;
+	pthread_cond_t c_prod = PTHREAD_COND_INITIALIZER;
+	
+	void* producer(void* param);
+	void* consumer(void* param);
+
+	int main(int argc, char* argv[]) {
+	    pthread_t tid1, tid2;
+	    int i;
+	    
+	    if (pthread_create(&tid1, NULL, producer, NULL) != 0) {
+	        fprintf(stderr, "Unable to create producer thread\n");
+	        exit(1);
+	    }
+	    if (pthread_create(&tid2, NULL, consumer, NULL) != 0) {
+	        fprintf(stderr, "Unable to create consumer thread\n");
+	        exit(1);
+	    }
+	    
+	    pthread_join(tid1, NULL);
+	    pthread_join(tid2, NULL);
+	    printf("Parent quiting\n");
+	}
+
+	void* producer(void* param) {
+	    int i;
+	
+	    for (i = 1; i <= 20; i++) {
+	        pthread_mutex_lock(&m);
+	        if (num > BUF_SIZE) {
+	            exit(1);  // overflow
+	        }
+	        while (num == BUF_SIZE) {  // block if buffer is full
+	            pthread_cond_wait(&c_prod, &m);
+	        }
+	        buffer[add] = i;  // buffer not full, add element
+	        add = (add + 1) % BUF_SIZE;
+	        num++;
+	        pthread_mutex_unlock(&m);
+	
+	        pthread_cond_signal(&c_cons);
+	        printf("producer: insert %d\n", i);
+	        fflush(stdout);
+	    }
+	    
+	    printf("producer quiting\n");
+	    fflush(stdout);
+	    return 0;
+	}
+
+	void* consumer(void* param) {
+	    int i;
+	
+	    while (1) {
+	        pthread_mutex_lock(&m);
+	        if (num < 0) {  // underflow
+	            exit(1);
+	        }
+	        while (num == 0) {  // block if buffer empty
+	            pthread_cond_wait(&c_cons, &m);
+	        }
+	        i = buffer[rem];  // buffer not empty, remove element
+	        rem = (rem + 1) % BUF_SIZE;
+	        num--;
+	        pthread_mutex_unlock(&m);
+	
+	        pthread_cond_signal(&c_prod);
+	        printf("Consume value %d\n", i);
+	        fflush(stdout);
+	    }
+	}
+	```
 
 
 ### 5. Thread Design Consideration

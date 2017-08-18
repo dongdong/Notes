@@ -3,6 +3,8 @@
 
 ### 1. Introduction
 
+##### Introduction
+
 * Preview
 	- What is an operating system?
 	- What are key components of an operating system?
@@ -28,6 +30,8 @@
 	- Separation of mechanism & policy: implement flexible mechanism to support  many policies
 	- Optimize for common case 
 
+
+##### System call
 
 * User/Kernel Protection Boundary
 	- User-level: applications
@@ -66,6 +70,8 @@
 
 	![system_call_list](imgs/IntroOS_1_4.png)
 
+
+##### OS structures
 
 * Monolithic OS
 	-  [Monolithic kernel](https://en.wikipedia.org/wiki/Monolithic_kernel)
@@ -108,6 +114,8 @@
 
 ### 2. Processes and Process Management
 
+##### Introduction
+
 * Preview
 	- What is a process
 	- How are processes represented by OS
@@ -119,6 +127,8 @@
 	- Application: program on disk, static entity 
 	- Process: state of a program, loaded in memory when executing, active entity
 
+
+##### process-related abstrctions
 
 * Process address space
 
@@ -140,6 +150,8 @@
 	
 	![PCB](imgs/IntroOS_2_3.png)
 
+
+##### Process management mechanisms
 
 * Context switch
 	- switching the CPU from  the context of one process to the context of another
@@ -206,6 +218,8 @@
 
 ### 3. Threads and Concurrency
 
+##### Introduction
+
 * Preview
 	- Whare are threads
 	- How threads different from processes
@@ -244,6 +258,13 @@
 	- mechanisms to safely coordinate among threads running concurrently in the same  address space
 
 
+* Thread creation
+	
+	![thread_creation](imgs/IntroOS_3_4.png)
+
+
+##### Thread synchronization
+
 * Concurrency control & Coordination
 	- mutual exclusion
 		- exclusive access to only one thread at a time
@@ -252,11 +273,6 @@
 		- specify condition before proceeding
 		- condition variable
 	- waking up other threads from wait state
-
-
-* Thread creation
-	
-	![thread_creation](imgs/IntroOS_3_4.png)
 
 
 * Mutual exclusion
@@ -340,6 +356,8 @@
 	```
 
 
+##### Common pitfalls
+
 * Avoiding Common mistakes
 	- keep track of mutex/cond variables used with a resource
 	- check that you are always using lock & unlock correctly 
@@ -353,9 +371,128 @@
 
 
 * Spurious wake up
+	- wake up threads that may not be able to proceed
+	- if (unlock after broadcast/signal) => no other thread can get lock 
+	- unlock the mutex before broadcast/signal
+	```
+	// OLD WRITER
+	Lock (counter_mutex) {
+	    resource_counter =  0;
+	    Broadcast(read_phase);
+	    Signal(write_phase);
+	} // unlock
+
+	// New WRITER
+	Lock (counter_mutex) {
+	    resource_counter = 0;
+	}
+	Broadcast(read_phase);
+	Signal(write_phase);
+	```
+	- could NOT unlock the mutex before broadcast/signal
+	```
+	// READERS
+	Lock (counter_mutex) {
+	    resource_counter--;
+	    if (counter_resource == 0) {
+	        Signal(write_phase);
+	    }
+	}
+	```
 
 
 * Dead lock
+	- Two or more competing threads are waiting on each other to complete, but one of them do
+	- Solutions:
+		- fine-grained locking, e.g. unlock A before locking B
+		- get all locks upfront, then release at the end
+		- use one MEGA lock
+		- maintain lock order, prevent cycles in wait graph
+		- deadlock detection & recovery, rollback
+
+
+##### Kernel vs. User-level threads
+
+* Kernel & user-level thread mappings
+	- One-to-One model
+		- +: os sees threads, synchronization, blocking
+		- -: must go to OS for all operations, may be expensive
+		- -: OS may have limits on policies, thread number
+		- -: portability
+	
+	![one-to-one_mapping](imgs/IntroOS_3_7.png)
+		
+	- Many-to-One model
+		- +: totally protable
+		- -: OS has no insights into application needs
+		- -: OS may block entire process if one user-level thread blocks on I/O
+
+	![one-to-many_mapping](imgs/IntroOS_3_8.png)
+
+	- Many-to-Many model
+		- +: can be best of both worlds
+		- +: can have bound or unbound threads
+		- -: require coordination between user and kernel level thread managers
+	
+	![many-to-many_mapping](imgs/IntroOS_3_9.png)
+
+
+* Scope of multithreading
+	- Process scope: user-level library manages threads within a sigle process
+	- System scope: system-wide thread management by OS-level thread managers, e.g. CPU scheduler
+
+
+##### Multithreading Patthers
+
+* Boss-workers Pattern
+	- Boss-workers
+		- boss: assign work to workers
+		- worker: performs entire task
+	- Throughput of the system limited by boss thread => must keep boss efficient
+		- throughput = 1 / boss_time_per_order
+	- Boss assign work by 
+		- directly signalling specific worker
+			- +: workers don't need to synchronize
+			- -: boss must track what each worker is doing
+			- -: throughput will go down!
+		- placing work in producer/consumer queue
+			- +: boss does't need to know details about workers
+			- -: queue synchronization
+	- Worker pool: static or dynamic
+	- +: simplicity
+	- -: thread pool management
+	- -: locality
+
+	![boss-worker](imgs/IntroOS_3_10.png)
+
+
+* Boss-workers variants
+	- workers specialized for certain tasks instead of all workers created equal
+	- +: better locality
+	- +: Quality of service management
+	- -: load balancing
+
+
+* Pipeline pattern
+	- threads assigned one subtask in the system
+	- multiple tasks concurrently in the system,  in different pipeline stages
+	- sequence of stages, stage == subtask
+	- each stage == thread pool
+	- shared-buffer based communication b/w stages
+	- +: specialization and locality
+	- -: balancing and synchronization overheads
+
+
+* Layered pattern
+	- each layer group of related subtasks
+	- end-to-end task must pass  up and down through all layers
+	- +: specilization
+	- +: less fine-grained than pipeline
+	- -: not suitable for all applications
+	- -: syncrhonization
+		
+	![layered](imgs/IntroOS_3_11.png)
+
 
 
 ### 4. PThreads

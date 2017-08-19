@@ -702,6 +702,107 @@
 
 ### 5. Thread Design Consideration
 
+* Preview
+	- Kernel vs. user-level threads
+	- Threads and interrupts
+	- Threads and signal handling
+
+* Papers
+	- "Beyond Multiprocessing: Multithreading the Sun OS Kernel" by Eykholt et. al.
+	- "Implementing Lightweight Threads" by Stein and Shah
+
+
+##### Kernel vs. user-level threads
+
+* Kernel vs. user-level threads
+	- User level library provides:
+		- thread abstraction
+		- scheduling, synchronization, ...
+	- OS kernel maintains:
+		- thread abstraction
+		- scheduling, synchronization, ...
+
+
+* Thread-related Data Structures
+	- User-level thread (ULT)
+		- UL thread ID
+		- UL regs
+		- thread stack, ...
+	- Kernel-level thread (KLT)
+		- stack
+		- regitsters, ...
+	- CPU
+		- pointer to current and other threads, ...
+	- "Hard" process state
+		- virtual address mapping, ...
+	- "Light" process state
+		- signal mask
+		- sys call args, ...
+
+	![thread_data_structure](imgs/IntroOS_5_1.png)
+
+	
+* Rational for multiple data structures
+	- Signle PCB
+		- large continuous data structure
+		- private for each entity
+		- saved and restored on each context switch
+		- update for any changes
+	- Multiple data structures
+		- smaller data structures
+		- easier to share
+		- on context switch, only save and restore what needs to change
+		- user-level library need only update portion of the state
+	- Merits
+		- scalability
+		- overheads
+		- performance
+		- flexibility
+
+
+* User-level Thread Data Structures
+	- thread creation => thread ID (tid)
+	- tid: index into table of pointers
+	- table pointers point to per-thread data structure
+	- stack growth can be dangerous
+		- solution: red zone
+
+	![user_thread_data_structure](imgs/IntroOS_5_2.png)
+
+
+* Kernel-level Data Structure
+	- Process
+		- list of kernel-level threads
+		- virtual address space
+		- user credentials
+		- signal handlers
+	- Light-Weight Process (LWP)
+		- user level registers
+		- system call args
+		- resource usage info
+		- signal mask
+		- similar to ULT, but visible to kernel, not needed when process not running
+	- Kernel-level Threads
+		- kernel-level register
+		- stack pointer
+		- scheduling info
+		- pointers to associate LWP, Process, CPU structures
+		- information needed even when process not running => not swappable
+	- CPU
+		- current thread
+		- list of kernel-level thread
+		- dispatching & interrupt handling information
+		- on SPARC dedicated reg == current thread
+
+	![kernel_thread_data_structures](imgs/IntroOS_5_3.png)
+
+
+* Basic Thread Management Interactions
+	- User-level library does not know waht is happening in the kernel
+	- Kernel does not know what is happening in user-level library
+	- System calls and special signals allow kernel and user-level thread library to interact and coordinate
+
+
 
 
 ### 6. Thread Performance Consideration

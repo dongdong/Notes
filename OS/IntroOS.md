@@ -724,21 +724,21 @@
 
 
 * Thread-related Data Structures
+	- "Hard" process state
+		- virtual address mapping, ...
 	- User-level thread (ULT)
 		- UL thread ID
 		- UL regs
 		- thread stack, ...
+	- "Light" process state
+		- signal mask
+		- sys call args, ...
 	- Kernel-level thread (KLT)
 		- stack
 		- regitsters, ...
 	- CPU
 		- pointer to current and other threads, ...
-	- "Hard" process state
-		- virtual address mapping, ...
-	- "Light" process state
-		- signal mask
-		- sys call args, ...
-
+	
 	![thread_data_structure](imgs/IntroOS_5_1.png)
 
 	
@@ -797,12 +797,80 @@
 	![kernel_thread_data_structures](imgs/IntroOS_5_3.png)
 
 
-* Basic Thread Management Interactions
-	- User-level library does not know waht is happening in the kernel
-	- Kernel does not know what is happening in user-level library
-	- System calls and special signals allow kernel and user-level thread library to interact and coordinate
+##### Interrupts and Signals
+
+* Interrupts
+	- events generated externally by components other than CPU (I/O devices, timers, other CPUs)
+	- determined based on the physical platform
+	- appear asynchronously
+	- have a unique ID depending on the hardware
+	- can be masked and disabled/suspended via corresponding mask, per-CPU interrupt mask
+	- if enabled, trigger corresponding hadler, interrupt handler set for entire system by OS
+
+* Signals
+	- events triggered by the CPU & software running on it
+	- determined based on the Operating System
+	- appear synchronously or asynchronously
+	- have a unique ID depending on OS
+	- can be masked and disable/suspended via corresponding mask, per-process signal mask
+	- if enable, trigger corresponding handler, signal handlers set on per process basis, by process
 
 
+* Interrupt Handling
+
+	![interrupt_handing](imgs/IntroOS_5_4.png)
+
+
+* Signal Handing
+
+	![signal_handing](imgs/IntroOS_5_5.png)
+
+
+##### Task in Linux
+
+* Task
+	- main execution abstraction
+	- kernel level thread
+	- single-threaded process => 1 task
+	- multi-threaded process => many task
+
+	```
+	// task struct in Linux
+	struct task_struct {
+	    // ...
+	    pid_t pid;
+	    pid_t tgid;
+	    int prio;
+	    volatile long state;
+	    struct mm_struct* mm;
+	    struct files_struct* files;
+	    struct list_head tasks;
+	    int on_cpu;
+	    cpumask_t cpus_allowed;
+	    // ...
+	}
+	``` 
+
+* Task creation
+	- clone(function, stack_ptr, sharing_flags, args)
+
+	![task_sharing_flags](imgs/IntroOS_5_6.png)
+
+
+* Linux thread model
+	- Native POSIX Thread Library (NPTL), "1:1 model"
+		- kernel sees each ULT info
+		- kernel traps are cheaper
+		- more resources: memory, large range of IDs
+	- Older Linux threads, "M-M model"
+		- similar to those described in Solaris papers 
+
+
+* Summary
+	- Sun/Solaris paper
+		- implementation insights for supporting user/kernel-level threads
+		- historic perspective on Linux threading models
+	- Interrupts and signals
 
 
 ### 6. Thread Performance Consideration

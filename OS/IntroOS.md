@@ -976,7 +976,7 @@
 	- Asymmetric Multi-Process/Thread Event-Driven Model (AMPED/AMTED)
 	- Helpers:
 		- designated for blocking I/O operations only
-		- pipe/socket based comm. w/ event dispather
+		- pipe/socket based communication with event dispather
 		- helper blocks, but main event loop and process will not
 	- Helper threads/processes
 		- +: resolves portability limitations of basic event-driven model
@@ -990,7 +990,7 @@
 * Flash: event-driven web server
 	- AMPED: an event-driven web server with asymmetric helper processes
 	- helpers used for disk reads
-	- pipes used for comm. w/ dispatcher
+	- pipes used for communicating with dispatcher
 	- helpers reads file in memory via mmap
 	- dispatcher checks via mincore if pages are in mm, to decide 'local' handler or helper
 
@@ -1002,12 +1002,14 @@
 	* Module: per functionality
 	* Flow of control: similar to event driven model
 	* Combination of MP + MT
-		- each processes: boss/worker w/ dynamic thread pool
+		- each process: boss/worker with dynamic thread pool
 		- number of processes can also be dynamically adjusted
 
 	![apache_web_server](imgs/IntroOS_6_7.png)
 
-
+* Summary
+	- Event-driven model for concurrent processing
+	- Compared multi-process vs. multi-threaded vs. event-driven designs
 
 
 ### 7. Scheduling

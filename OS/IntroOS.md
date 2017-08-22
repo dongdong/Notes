@@ -875,6 +875,139 @@
 
 ### 6. Thread Performance Consideration
 
+* Preview
+	- Performance comparisons
+		- multi-process vs. multi-threaded vs. event-driven
+	-  Event-driven architectures
+		-  Paper: "Flash: An Efficient and Portable Web Server"
+	- Designing experiments
+
+
+* Performance metrics
+	- Metrics
+		- a measurement standard
+		- measurable and/or quanlifiable property, e.g. execution time
+		- of the system we're interested in, e.g. software implementation of a problem
+		- that can be used to evaluate the system behavior, e.g. its improvement compared to other implementations
+	- Throughput, execution time, request rate, wait time, CPU utilization, average resource usage, client-perceived performance, etc.
+	- For a matrix multiply application
+		- execution time
+	- For a web service application
+		- number of client requests/time
+		- response time
+	- For hardware
+		- higher utilization
+
+
+
+* MultiProcess web server (MP)
+	- +: simple programming
+	- -: high memory usage
+	- -: costly context switch
+	- -: hard and costly to maintain shared state (tricky port setup)
+	
+	![multiprocess](imgs/IntroOS_6_1.png)
+
+
+* MultiThreaded web server
+	- +: shared address space
+	- +: shared state
+	- +: cheap context switch
+	- -: not simple implementation
+	- -: requires synchronization
+	- -: underlying support for threads
+	
+	![multithreaded](imgs/IntroOS_6_2.png)
+
+
+* Event-driven Model
+	- Single process, single address space, single thread of control
+	- Events
+		- receipt of request
+		- completion of send
+		- completion of disk read
+	- Dispatcher
+		- state machine, external events
+		- call handler => jump to code
+	- Handler
+		- run to completion
+		- if  they need to block => initiate blocking operation and pass control to dispatch loop
+	
+	![event-driven](imgs/IntroOS_6_3.png)
+
+	- Benefits
+		- signle address space, single flow of control
+		- smaller memory requirement, no context switching
+		- no synchronization
+
+
+* Concurrent execution in event-driven model
+	- MP or MT: 1 request per execution context (process/thread)
+		- if (idle > 2 * ctx_switch) => ctx_switch to hide latency
+	- Event-driven: many request interleaved in an execution context, 
+		- context switching just waste cycles that could have been used for request processsing
+		- process request until wait necessary then switch to another request	
+		- e.g.
+			- client C1: wait on send
+			- client C2: wait on disk I/O
+			- client C3: wait on recv
+		- multiple CPUs: multiple event-driven processes
+	- How does this work
+		- file descriptors: sockets, network, files, disk
+		- event: input on file descriptor (fd)
+		- which file descriptor?
+			- select()
+			- poll()
+			- epoll()
+
+
+* Asynchronous I/O operations
+	- Asynchronous system call
+		- process/thread makes system call
+		- OS obtains all relevant info from stack and either learns where to return results, or tells caller where to get results later
+		- process/thread can continue
+	- Requires support from kernel (e.g. threads) and/or device (e.g. DMA)
+		- fits nicely with event-driven model
+
+	![async_io](imgs/IntroOS_6_4.png)	
+
+
+* What if Async calls are not available
+	- Asymmetric Multi-Process/Thread Event-Driven Model (AMPED/AMTED)
+	- Helpers:
+		- designated for blocking I/O operations only
+		- pipe/socket based comm. w/ event dispather
+		- helper blocks, but main event loop and process will not
+	- Helper threads/processes
+		- +: resolves portability limitations of basic event-driven model
+		- +: smaller footprint thant regular worker thread
+		- -: applicability to certain classes of applications
+		- -: event routing on multi CPU systems
+
+	![AMPED](imgs/IntroOS_6_5.png)
+
+
+* Flash: event-driven web server
+	- AMPED: an event-driven web server with asymmetric helper processes
+	- helpers used for disk reads
+	- pipes used for comm. w/ dispatcher
+	- helpers reads file in memory via mmap
+	- dispatcher checks via mincore if pages are in mm, to decide 'local' handler or helper
+
+	![Flash_optimizations](imgs/IntroOS_6_6.png)
+
+
+* Apache web server
+	* Apache core: basic server skeletion
+	* Module: per functionality
+	* Flow of control: similar to event driven model
+	* Combination of MP + MT
+		- each processes: boss/worker w/ dynamic thread pool
+		- number of processes can also be dynamically adjusted
+
+	![apache_web_server](imgs/IntroOS_6_7.png)
+
+
 
 
 ### 7. Scheduling

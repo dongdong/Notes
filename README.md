@@ -13,6 +13,6 @@
 
 
 * Network
-	* [Linux I/O, select, poll and epoll](Network/LinuxIO.md)
+	* [select, poll and epoll](Network/LinuxIO.md)
 
 * ...

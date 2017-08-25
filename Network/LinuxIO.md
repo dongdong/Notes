@@ -168,10 +168,10 @@
 		- POLLWRNORM：写普通数据不会导致阻塞
 		- POLLWRBAND：写优先数据不会导致阻塞
 		- POLLMSGSIGPOLL：消息可用
-　　- 此外，revents域中还可能返回下列事件，这些事件在events域中无意义
-	　　- POLLER：指定的文件描述符发生错误
-	　　- POLLHUP：指定的文件描述符挂起事件
-	　　- POLLNVAL：指定的文件描述符非法
+	- 此外，revents域中还可能返回下列事件，这些事件在events域中无意义
+		- POLLER：指定的文件描述符发生错误
+		- POLLHUP：指定的文件描述符挂起事件
+		- POLLNVAL：指定的文件描述符非法
 	- POLLIN | POLLPRI等价于select()的读事件，POLLOUT | POLLWRBAND等价于select()的写事件
 	
 

@@ -84,7 +84,6 @@
 	#include <sys/time.h>
 	
 	int select(int max_fd_p1, fd_set* read_set, fd_set* write_set, fd_set* except_set, timeval* timeout);
-	
 	```
 
 * 函数参数

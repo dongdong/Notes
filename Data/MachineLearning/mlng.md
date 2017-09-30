@@ -88,14 +88,14 @@
 
 ### 4. Linear Regression with Multiple Variables 
 
-##### Multiple features
+##### Multiple Variables
 
 * Gradient descent for multiple variables
 
 	![Linear_regression_multi-feature](imgs/mlng_4_1.png)
 
 
-##### Gradient descent in practice I: Feature scaling
+##### Gradient descent in practice
 
 * Feature scaling
 
@@ -103,15 +103,12 @@
 
 	- get every feature into approximately a [-1, 1] range
 
-
-* Mean normalization
+	- Mean normalization
 	
 	![mean_normalization](imgs/mlng_4_3.png)
 	
-	 
-##### Gradient descent in practice II: Learning rate
 
-* Making sure gradient desent is working correctly
+* Learning rate: making sure gradient desent is working correctly
 
 	![plots_for_learning_rate](imgs/mlng_4_4.png)
 
@@ -120,9 +117,7 @@
 	![learning_rate_summary](imgs/mlng_4_6.png)
 	
 
-##### Features and polynomial regression
-
-* Polynomial regression
+* Features and polynomial regression
 	
 	![polynomial_regression](imgs/mlng_4_7.png)
 
@@ -192,7 +187,22 @@
 	
 	![multi-class_classification](imgs/mlng_6_12.png)
 
+
 ### 7. Regularization
+
+* The problem of overfitting
+
+	![linear_regression_overfitting](imgs/mlng_7_1.png)
+
+	![logistic_regression_overfitting](imgs/mlng_7_2.png)
+
+
+* Addressing overfitting
+
+	![addressing_overfitting_options](imgs/mlng_7_3.png)
+
+	
+
 
 
 ### 8. Neural Networks: Representation

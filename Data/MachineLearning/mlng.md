@@ -257,6 +257,50 @@
 
 ### 9. Nural Networks: Learning
 
+* Cost function
+	
+	![cost_function](imgs/mlng_9_1.png)
+
+
+* Backpropagation algorithm
+
+	- Forward propagation
+
+	![forward-propagation](imgs/mlng_9_2.png)
+
+	- Backpropagation
+	
+	![backpropagation_1](imgs/mlng_9_3.png)
+
+	![backpropagation_2](imgs/mlng_9_4.png)
+
+
+* Gradient checking
+
+	![numerical_estimation_of_gradients](imgs/mlng_9_5.png)
+
+	![parameter_vector](imgs/mlng_9_6.png)
+
+	![implementation_note](imgs/mlng_9_7.png)
+
+
+* Random initialization
+	- Zero initialization: after each update, parameters corresponding to inputs going into each hidden units are identical
+	- Random initialization: symmetry breaking
+
+
+* Training a neural network
+
+	- Pick a network architecture
+
+	![network architecture](imgs/mlng_9_8.png)
+
+	- Training a nerual network 
+	
+	![training_steps](imgs/mlng_9_9.png)
+
+	
+
 
 ### 10. Advice for Applying Machine Learning
 

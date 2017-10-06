@@ -202,10 +202,57 @@
 	![addressing_overfitting_options](imgs/mlng_7_3.png)
 
 	
+* Regularization 
 
+	- Cost function
+
+	![cost_function](imgs/mlng_7_4.png)
+
+	![regularization_parameter](imgs/mlng_7_5.png)
+
+	- gradient descent
+
+	![regularized_linear_regression](imgs/mlng_7_6.png)
+
+	- Regularized logistic regression
+
+	![regularized_logistic_regression_1](imgs/mlng_7_7.png)
+	
+	![regularized_logistic_regression_2](imgs/mlng_7_8.png)
 
 
 ### 8. Neural Networks: Representation
+
+* Non-linear hypotheses
+	- Non-linear classification
+
+
+* Neural Networks
+	- Origins: algorihtms that try to mimic the brain
+	- Was very widely used in 80s and early 90s; popularity diminished in late 90s
+	- Recent resurgence: state-of-the-art technique for many applications
+
+
+* Model representation
+
+	![neural_network_model_1](imgs/mlng_8_1.png)
+
+	![neural_network_model_2](imgs/mlng_8_2.png)
+
+
+* Forward propagation
+
+	![forward_propagation](imgs/mlng_8_3.png)
+
+
+* Example and intuition
+
+	![forward_propagation_example](imgs/mlng_8_4.png)
+
+
+* Multi-class classification
+
+	![multi-class_classification](imgs/mlng_8_5.png)
 
 
 ### 9. Nural Networks: Learning

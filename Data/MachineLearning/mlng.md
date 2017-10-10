@@ -300,9 +300,63 @@
 	![training_steps](imgs/mlng_9_9.png)
 
 	
-
-
 ### 10. Advice for Applying Machine Learning
+
+* Machine learning diagnostic
+	- Diagnostic: a test that you can run to gain insight what is/isn't working with a learning algorithm, and gain guidance as to how best to improve its performance
+	- Diagnostics can take time to implement, but doing so can be a very good use of your time
+
+
+* Evaluating a hypothesis
+	- training set & test set 
+
+
+* Model selection and training/validation/test sets
+	
+	![model_selection_1](imgs/mlng_10_1.png)
+
+	![train_validation_test_error](imgs/mlng_10_2.png)
+
+	![model_selection_2](imgs/mlng_10_3.png)
+	
+
+* Diagnosing bias vs variance
+
+	![bias_variance_1](imgs/mlng_10_4.png)
+	
+	![bias_variance_2](imgs/mlng_10_5.png)
+
+	![bias_variance_3](imgs/mlng_10_6.png)
+
+
+* Regularization and bias/variance
+
+	![Linear_regression_with_regularization](imgs/mlng_10_7.png)
+
+	![choosing_regularization_parameter_1](imgs/mlng_10_8.png)
+
+	![choosing_regularization_parameter_2](imgs/mlng_10_9.png)
+
+	![bias_variance_of_regularization_parameter](imgs/mlng_10_10.png)
+
+	
+* Learning curves
+
+	![learning_curves](imgs/mlng_10_11.png)
+
+	![learning_curves_high_bias](imgs/mlng_10_12.png)
+
+	![learning_curves_high_variance](imgs/mlng_10_13.png)
+	
+
+* Summary: deciding what to do next
+
+	![debuging_learning_algorithm](imgs/mlng_10_14.png)
+
+	
+* Neural networks and overfitting
+
+	![neural_networks_and_overfitting](imgs/mlng_10_15.png)
 
 
 ### 11. Machine Learning System Design

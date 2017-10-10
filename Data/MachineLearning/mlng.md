@@ -361,6 +361,32 @@
 
 ### 11. Machine Learning System Design
 
+* Error analysis
+	- Recommended approach
+		- Start with a simple algorithm that you can implement quickly. Implement it and test it on your cross-validation data
+		- Plot learning curves to decide if more data, more feature, etc. are likely to help
+		- Error analysis: Manually examine the examples in cross validation set that your algorithm made errors on. See if you spot any systematic trend in what type of examples it is making errors on
+	- Error analysis may not be helpful for deciding if this is likely to improve performance. Only solution is to try it and see if it works; Need numerical evaluation of algorithm's performance
+
+
+* Error metrics for skewed classes
+	
+	![precision_recall](imgs/mlng_11_1.png)
+
+	
+* Trading off precision and recall
+	
+	![trading_off_precision_recall](imgs/mlng_11_2.png)
+
+	![F1_score](imgs/mlng_11_3.png)
+
+
+* Data for machine learning
+
+	![data_for_machine_learning](imgs/mlng_11_4.png)
+
+	![large_data_rationale](imgs/mlng_11_5.png)
+
 
 ### 12. Support Vector Machines
 

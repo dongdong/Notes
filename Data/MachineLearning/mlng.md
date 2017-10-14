@@ -390,8 +390,72 @@
 
 ### 12. Support Vector Machines
 
+* Optimization objective
+	
+	![cost_function_1](imgs/mlng_12_1.png)
+
+
+* Large margin intuition
+	
+	![cost_function_2](imgs/mlng_12_2.png)
+	
+	![decision_boundary](imgs/mlng_12_3.png)
+
+
+* Kernels
+
+	- Non-linear decision boundary
+
+	![non-linear_decision_boundary](imgs/mlng_12_4.png)
+
+	![kernel](imgs/mlng_12_5.png)
+
+	![kernel_and_similarity](imgs/mlng_12_6.png)
+
+	![kernel_similarity_example](imgs/mlng_12_7.png)
+
+	![kernel_example](imgs/mlng_12_8.png)
+
+	![svm_with_kernel_1](imgs/mlng_12_9.png)
+
+	![svm_with_kernel_2](imgs/mlng_12_10.png)
+
+	![svm_parameters](imgs/mlng_12_11.png)
+
+
+* Using an SVM
+
+	![logistic_regression_vs_SVM](imgs/mlng_12_12.png)
+
 
 ### 13. Clustering
+
+* K-means algorithm
+
+	![k-means](imgs/mlng_13_1.png)
+
+
+* Optimization objective
+
+	![optimization_objectives_1](imgs/mlng_13_2.png)
+
+	![optimization_objectives_2](imgs/mlng_13_3.png)
+	
+
+* Random initialization
+
+	![random_initialization_1](imgs/mlng_13_4.png)
+
+	![local_optima](imgs/mlng_13_5.png)
+
+	![random_initialization_1](imgs/mlng_13_6.png)
+
+
+* choosing the number of clusters
+
+	![elbow_method](imgs/mlng_13_7.png)
+
+	![choosing_value_k](imgs/mlng_13_8.png)
 
 
 ### 14. Dimensionality Reduction

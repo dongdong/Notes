@@ -460,6 +460,46 @@
 
 ### 14. Dimensionality Reduction
 
+* Motivation I: Data Compression
+
+	![reduce_data_from_2D_to_1D](imgs/mlng_14_1.png)
+
+	![reduce_data_from_3D_to_2D](imgs/mlng_14_2.png)
+	
+
+* Motivation II: Data Visualization
+
+	
+* Principal Component Analysis problem formulation
+	
+	![PCA_problem_formulation](imgs/mlng_14_3.png)
+
+	
+* Principal Component Analysis algorithm
+
+	- Data preprocessing
+	
+	![data_preprocessing](imgs/mlng_14_4.png)
+
+	- PCA algorithm
+
+	![svd](imgs/mlng_14_5.png)
+
+	- Summary
+
+	![svd_summary](imgs/mlng_14_6.png)
+	
+
+* Reconstruction from compressed representation
+
+	![reconstruction](imgs/mlng_14_7.png)
+
+
+* Choosing the number of principal components
+
+	
+
+
 
 ### 15. Anomaly Detection
 

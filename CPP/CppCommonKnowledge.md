@@ -15,7 +15,7 @@
 
 * 多态
 	- 多态类型就是带有虚函数的类类型
-	- 从设计角度看，多态对象就是已给具有不止一种类型的对象
+	- 从设计角度看，多态对象就是一个具有不止一种类型的对象
 	- 多态基类则是一个为满足多态对象的使用需求而设计的基类
 
 
@@ -39,7 +39,6 @@
 * 设计模式的两个重要属性：
 	1. 它们描述了经过验证的、成功的设计技术，这些技术可以按上下文相关的方式进行定制，以便满足新的设计场合的要求
 	2. 在提及某个特定模式的应用时，不仅包括其中用到的技术，还包括应用该模式的动因以及应用后所达到的效果
-
 * 设计模式的描述会包含以下4个比不可少的部分：
 	1. 必须具有一个毫无歧义的名字
 	2. 必须定义该模式所能解决的问题
@@ -99,7 +98,13 @@
 
 	- **NOTE:** 不可以使用int* 初始化int (&)[n]
 
-	- 出于上述原因，经常使用标准容器（vector或string）来代替对数组的大多数传统用法，并且通常应该优先考虑标准容器
+	```
+	int *anArray2 = new int[anArraySize];
+	average(anArray2);                             // WRONG!
+    average_n(anArray2, anArraySize);              // OK
+	```
+
+	- 因此，经常使用标准容器（vector或string）来代替对数组的大多数传统用法，并且通常应该优先考虑标准容器
 
 
 * 二维数组
@@ -325,6 +330,12 @@
     - 对于复杂的用户自定义类型来说，目标（this）在采用源重新初始化之前必须被清理掉
     - 构造函数可以假定它肯定是在处理一个未初始化的存储区
     - 由于一个正当的赋值操作会清掉左边的实参，因此永远都不应该对一个未初始化的存储区执行用户自定义赋值操作
+	```
+	// ...
+	// 直接调用operator new从而避免了通过String的默认构造函数执行的隐式初始化动作
+	String* names = static_cast<String*>(::operator new(_BUFSIZ));
+	names[0] = "Sakamoto";                 // ERROR! delete [] 未被初始化的指针names
+	```
 
 
 ### 13. 复制操作
@@ -1115,7 +1126,7 @@
     };   
     ABC::~ABC() { ... }
 	```
-    - 注意，为该纯虚函数提供一个实现是必不可少的，因为派生类的析构函数将会隐式地调用其基类的析构函数；
+    - **NOTE**：为该纯虚函数提供一个实现是必不可少的，因为派生类的析构函数将会隐式地调用其基类的析构函数；
     - 从一个派生类析构函数内部对一个基类析构函数的隐式调用，总是非虚拟的
 
 
@@ -1149,13 +1160,13 @@
         void operator delete(void *) {}
     };
 	```
-    - 任何在堆上分配一个NoHeap对象的习惯性尝试，都将会导致编译期错误
+    - 任何在堆上分配一个“NoHeap”对象的习惯性尝试，都将会导致编译期错误
     - 给出operator new和operator delete的定义是因为在一些平台上，它们可能会被构造函数和析构函数隐式地调用
     - 同理，将其声明为protected，因为它们可能会被派生类 的构造函数和析构函数调用
 
 
 * 还要注意阻止在堆上分配对象的数组
-    - 将array new和array delete声明为private其不予以定义即可
+    - 将array new和array delete声明为private且不予以定义即可
 	```
     class NoHeap {
     public:
@@ -1173,6 +1184,7 @@
 * 某些场合下，我们可能鼓励而非阻止使用堆分配
     - 将析构函数声明为private即可
     - 当对象离开其作用域时，自动或静态对象，都会隐式调用析构函数
+    - 同时，要提供一个公有的销毁对象的方法（destory），否则创建的对象将无从销毁
 	```
     class OnHeap {
     private:
@@ -1187,8 +1199,8 @@
 
 ### 35. placement new
 
-* 直接调用构造函数是行不通的，然而，可以通过使用placement new（定位new）来“哄骗”编译器调用构造函数
-* placement new是operator new的一个标准的重载版本
+* 用户的程序不能在一块内存上自行调用其构造函数，必须由编译系统生成的代码调用构造函数。 然而，可以通过使用placement new来“哄骗”编译器调用构造函数
+* placement new是operator new的一个标准的重载版本，它完成的功能是在给定地址上调用构造函数
     - 原型如下：
     ```
     void* operator new(size_t, void* p) throw() {return p;}
@@ -1199,8 +1211,9 @@
     const int comLoc = 0x00400000;
     //...
     void* comAddr = reinterpret_cast<void*>(comLoc);
-    SPort* com1 = new (comAddr) Sport;    // 在comLoc位置创建对象
+    SPort* com1 = new (comAddr) SPort;    // 在comLoc位置创建对象
 	```
+	- 语言禁止用户替换placement new；而“普通的”operator new和operator delete则可以被替换掉
 
 
 * placement new是函数operator new的一个版本，它并不实际分配任何存储区
@@ -1208,6 +1221,19 @@
     - 应该直接调用该对象的析构函数
     ```
     com1->~SPort(); // 调用析构函数而非delete操作符
+	```
+
+
+* 也可以使用placement array new在给定空间创建对象数组
+	```
+	const int numComs = 4;
+	SPort* comPorts  = new (comAddr) SPort[numComs];
+	```
+	- 销毁元素
+	```
+	int i = numComs;
+	while (i)
+	    comPort[--i].~SPort();
 	```
 
 
@@ -1227,7 +1253,7 @@
     string* sbuf = static_cast<string *>(::operator new(n));
     int size = 0;
 	```
-    - 在第一次访问数组元素时，不能为其赋值，因为它还没有被初始化。可以使用placement new通过复制构造函数来初始化元素：
+    - 在第一次访问数组元素时，使用placement new通过复制构造函数来初始化元素：
     ```
     void append(string buf[], int&  size, const string& val) {
         new (&buf[size++]) string(val);    // placement new
@@ -1245,7 +1271,9 @@
     - 这一基本技术广泛应用于大多数标准库容器的实现
 
 
-- 参考：[C++中placement new操作符](http://blog.csdn.net/zhangxinrun/article/details/5940019)
+- 参考：
+	- [C++中placement new操作符](http://blog.csdn.net/zhangxinrun/article/details/5940019)
+	- [new/delete 详解](http://blog.csdn.net/hihozoo/article/details/51441521)
 
 
 
@@ -1281,7 +1309,7 @@
     - 如果在基类中定义了成员operator new和operator delete，要确保基类的析构函数是虚拟的。否则，通过一个基类指针来删除一个派生类对象的结果就是未定义的
 
 
-* 标准，全局的operator new和operator delete从堆上分配内存，但成员operator new和operator delete对于从哪里分配内存没有限制
+* 标准全局的operator new和operator delete从堆上分配内存，但成员operator new和operator delete对于从哪里分配内存没有限制
 
 
 ### 37. 数组分配
@@ -1312,10 +1340,11 @@
     ```
     aT = static_cast<T*>(operator new(sizeof(T)));
 	``` 
-    - 然而，当通过new表达式隐式地调用array new时，编译器会略微增加一些内存请求
+    - 然而，当通过new表达式隐式地调用array new时，编译器会略微增加一些内存请求；所请求的额外空间一般用于运行期内存管理器记录关于数组的一些信息；这些信息包括分配的元素个数，每个元素的大小等，对于以后回收内存是比不可少的
     ```
     aryT = new T[5];    // 调用内存量为5 * sizeof(T) + delta字节
 	```
+		
 
 
 ### 38. 异常安全公理
@@ -1382,7 +1411,7 @@
         //......
         if (iFeelLikeIt())    
             return;            // 函数退出？
-        g();                     // 抛出异常？
+        g();                   // 抛出异常？
         delete rh;
     }
 	```
@@ -1420,7 +1449,7 @@
 
 ### 42. 智能指针
 
-* 智能指针是一个类类型，它打扮成一个指针，但额外提供了内建指针无法啊提供的能力
+* 智能指针是一个类类型，它打扮成一个指针，但额外提供了内建指针无法提供的能力
     - 通常而言，一个智能指针使用类的构造函数，析构函数和复制操作符所提供的能力，来控制或跟踪对它所指向的东西的访问
     - 所有智能指针都重载->和*操作符，从而可以采用标准指针羽凡来使用它们
     - 另有一些智能指针，尤其是用作STL迭代器的指针，还重载了其他一些指针操作符，包括++，--，+，-，+=，-=

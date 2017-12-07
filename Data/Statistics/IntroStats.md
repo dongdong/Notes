@@ -208,7 +208,7 @@
 * Alpha levels
 	- levels of likelihood
 	- .05 (5%), .001 (1%), .001(0.1%)
-	- If the probability of getting a particular sample mean is less than $\alpha$, it is  
+	- If the probability of getting a particular sample mean is less than `$\alpha$`, it is  
 
 
 ### 10. t-test

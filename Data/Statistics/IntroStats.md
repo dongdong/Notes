@@ -202,13 +202,28 @@
 
 	![98_confidence_interval](imgs/IntroStats_8_6.png)
 
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+        inlineMath: [ ['$', '$'] ],
+        displayMath: [ ['$$', '$$']],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    messageStyle: "none",
+    "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 ### 9. Hypothesis Testing
 
 * Alpha levels
 	- levels of likelihood
 	- .05 (5%), .001 (1%), .001(0.1%)
-	- If the probability of getting a particular sample mean is less than `$\alpha$`, it is  
+	- If the probability of getting a particular sample mean is less than $\alpha$, it is  
 
 
 ### 10. t-test

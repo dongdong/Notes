@@ -1,4 +1,4 @@
-# Introduction to Descriptive Statistics @ Udacity
+# Introduction to Statistics @ Udacity
 
 ### 1. Intro to Research Methods
 
@@ -182,7 +182,34 @@
 
 ### 8. Estimation
 
+* Point estimate
+
+	![point_estimate](imgs/IntroStats_8_1.png)
+
+
+* Margin of error, Confidence Interval
+
+	![margin_of_error_1](imgs/IntroStats_8_2.png)
+
+	![margin_of_error_2](imgs/IntroStats_8_3.png)
+
+
+* Critical values of z
+
+	![z_critical_value](imgs/IntroStats_8_4.png)
+
+	![95_confidence_interval](imgs/IntroStats_8_5.png)
+
+	![98_confidence_interval](imgs/IntroStats_8_6.png)
+
+
 ### 9. Hypothesis Testing
+
+* Alpha levels
+	- levels of likelihood
+	- .05 (5%), .001 (1%), .001(0.1%)
+	- If the probability of getting a particular sample mean is less than $\alpha$, it is  
+
 
 ### 10. t-test
 

@@ -179,3 +179,17 @@
 	![standard_err](imgs/IntroStats_7_3.png)
 
 	
+
+### 8. Estimation
+
+### 9. Hypothesis Testing
+
+### 10. t-test
+
+### 11. One-Way ANOVA
+
+### 12. Correlation
+
+### 13. Regression
+
+### 14. Chi-Sqaured test

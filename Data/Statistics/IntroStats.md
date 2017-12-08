@@ -426,8 +426,97 @@
 
 ### 14. Correlation
 
+* Two variables
+
+	![two_variables](imgs/IntroStats_14_1.png)
+
+
+* Scatterplot
+
+	![scatterplot](imgs/IntroStats_14_2.png)
+
+
+* Strength & Direction
+	
+	![strength_direction](imgs/IntroStats_14_3.png)
+
+
+* Correlation Coefficient
+
+	![correlation_coefficient](imgs/IntroStats_14_4.png)
+
+
+* Hypothesis testing
+
+	![hypothesis_testing_1](imgs/IntroStats_14_5.png)
+
+	![hypothesis_testing_2](imgs/IntroStats_14_6.png)
+
+	
+* Confidence Interval, p_value
+
+	![confidence_interval](imgs/IntroStats_14_7.png)
+
+
+* Outlier
+	- r is sensitive to  outliers
+
+	![outlier](imgs/IntroStats_14_8.png)
+
+
 
 ### 15. Regression
+
+* Linear Regression
+	- The line of best fit
+
+	![linear_regression](imgs/IntroStats_15_1.png)	
+
+
+* Observed data, Expected data, residual
+
+	![residual](imgs/IntroStats_15_2.png)
+
+
+* Regression equation
+
+	![regression_equation_1](imgs/IntroStats_15_3.png)
+
+	![regression_equation_2](imgs/IntroStats_15_4.png)
+
+	![regression_equation_3](imgs/IntroStats_15_5.png)
+
+
+* Standard Error of Estimate
+
+	![standard_error_of_estimate](imgs/IntroStats_15_6.png)
+
+
+* Confidence intervals
+
+	![confidence_intervals](imgs/IntroStats_15_7.png)
+
+
+* Hypothesis testing for slope
+
+	![t-test_for_slope](imgs/IntroStats_15_8.png)
+
+
+* Outlier
+	- factors that affect simple linear regression
+
+	![outlier](imgs/IntroStats_15_9.png)
+	
+
+* Summary of Linear regression
+
+	![summary](imgs/IntroStats_15_10.png)
+
+
+* Multiple regression
+
+	![multiple_regression](imgs/IntroStats_15_11.png)
+
 
 
 ### 16. Chi-Sqaured test

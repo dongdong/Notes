@@ -202,36 +202,232 @@
 
 	![98_confidence_interval](imgs/IntroStats_8_6.png)
 
-<!-- mathjax config similar to math.stackexchange -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    jax: ["input/TeX", "output/HTML-CSS"],
-    tex2jax: {
-        inlineMath: [ ['$', '$'] ],
-        displayMath: [ ['$$', '$$']],
-        processEscapes: true,
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    messageStyle: "none",
-    "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
-});
-</script>
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 ### 9. Hypothesis Testing
 
 * Alpha levels
 	- levels of likelihood
 	- .05 (5%), .001 (1%), .001(0.1%)
-	- If the probability of getting a particular sample mean is less than $\alpha$, it is  
+	- If the probability of getting a particular sample mean is less than alpha, it is unlikely to occur
+
+	
+* Critical regions
+
+	![critical_regions](imgs/IntroStats_9_1.png)
+
+	
+* One-tailed vs. two-tailed test
+
+	![tailed_test](imgs/IntroStats_9_2.png)
 
 
-### 10. t-test
+* Hypothesis
+	- Null hypothesis
+	- Alternative hypothesis
 
-### 11. One-Way ANOVA
+	![hypothesis](imgs/IntroStats_9_3.png)
 
-### 12. Correlation
+	![reject_null_hypothesis](imgs/IntroStats_9_4.png)
 
-### 13. Regression
 
-### 14. Chi-Sqaured test
+* Decision errors
+	
+	![decision_errors](imgs/IntroStats_9_5.png)
+
+
+
+### 10. t-test I II
+
+* z-test
+	- z-test works when we know population mean and population standard deviation
+
+
+* t-test
+	- how different a sample mean is from a population
+	- how different two sample means are from each other
+		- dependent
+		- independent
+	
+
+* t-distribution
+
+	![t-distribution](imgs/IntroStats_10_2.png)
+
+
+* Degree of Freedom
+	- df = n -1
+
+	
+* t-table
+
+	![t-table](imgs/IntroStats_10_3.png)
+	
+
+* t-statistics
+
+	![t-statistics](imgs/IntroStats_10_4.png)
+
+
+* One-sample t-test
+
+	![one_sample_t-test](imgs/IntroStats_10_5.png)
+
+
+* p-value
+
+	![p-value](imgs/IntroStats_10_6.png)
+
+
+* Cohen's d
+
+	![cohens_d](imgs/IntroStats_10_7.png)
+
+
+* Dependent samples
+
+	![dependent_samples](imgs/IntroStats_10_8.png)
+
+	![dependent_t_test](imgs/IntroStats_10_9.png)
+
+	![t_confident_interval](imgs/IntroStats_10_10.png)
+
+
+* Types of Design
+	
+	![types_of_design](imgs/IntroStats_10_11.png)
+
+
+* Results sections
+	1. Descriptive statistics
+		- Mean, Stardard Deviation, etc.
+		- in text, in graphs, in tables
+	2. Inferential statistics
+		- hypothesis test
+			- kind of test, e.g. one-sample t-test
+			- test statistic
+			- degree of freedom
+			- p-value
+			- direction of test
+			- confidence interval on the mean difference
+		- APA style
+	3. Effect size measures
+	
+	![APA_test_statistics](imgs/IntroStats_10_12.png)
+
+	![APA_confidence_interval](imgs/IntroStats_10_13.png)	
+
+	![APA_effect_size](imgs/IntroStats_10_14.png)
+
+
+
+### 11. t-test III
+
+* Dependent vs. Independent Samples
+
+	![dependent_independent_samples](imgs/IntroStats_11_1.png)
+
+
+* Independent samples t-test
+
+	![independent_t-test](imgs/IntroStats_11_2.png)
+
+	![independent_t-test_example](imgs/IntroStats_11_3.png)
+
+
+* Pooled Variance
+
+	![pooled_variance](imgs/IntroStats_11_4.png)
+
+
+* t-Test Assumptions
+
+	![t-test_assumptions](imgs/IntroStats_11_5.png)
+
+
+
+### 12. One-Way ANOVA
+
+* Grand mean
+
+	![grand_mean](imgs/IntroStats_12_1.png)
+
+
+* Between-group variability, Within-group variability
+
+	![group_variability](imgs/IntroStats_12_2.png)
+
+
+* ANOVA
+	- Analysis of Variance
+	- One-Way ANOVA: one independent variable
+
+
+* Hypothesis
+
+	![ANOVA_hypothesis](imgs/IntroStats_12_3.png)
+
+	![ANOVA_hypothesis_example](imgs/IntroStats_12_4.png)
+
+	
+* F-statistic
+
+	![F-ratio](imgs/IntroStats_12_5.png)
+	
+	![ANOVA_example](imgs/IntroStats_12_6.png)
+
+
+
+### 13. ANOVA, Continued
+
+* Multiple Comparison Test
+
+	![multiple_comparison_test](imgs/IntroStats_13_1.png)
+	
+
+* Tukey's HSD
+
+	![tukeys_hsd](imgs/IntroStats_13_2.png)
+
+
+* Cohen's d for multiple comparison
+
+	![cohens_d](imgs/IntroStats_13_3.png)
+
+
+* Explained variation
+
+	![explained_variation](imgs/IntroStats_13_4.png)
+
+
+* Reporting results of ANOVA
+
+	![reporting_results](imgs/IntroStats_13_5.png)
+
+
+* POWER
+
+	![POWER_1](imgs/IntroStats_13_6.png)
+
+	![POWER_2](imgs/IntroStats_13_7.png)
+
+
+* ANOVA assumption
+
+	![ANOVA_assumption](imgs/IntroStats_13_8.png)
+
+
+* Summary
+
+	![ANOVA_summary_1](imgs/IntroStats_13_9.png)
+
+	![ANOVA_summary_2](imgs/IntroStats_13_10.png)
+
+
+
+### 14. Correlation
+
+
+### 15. Regression
+
+
+### 16. Chi-Sqaured test

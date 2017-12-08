@@ -335,6 +335,7 @@
 
 
 * Pooled Variance
+	- Used when sampes are not the same size
 
 	![pooled_variance](imgs/IntroStats_11_4.png)
 

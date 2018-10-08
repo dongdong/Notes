@@ -154,30 +154,115 @@
 
 ### 15. Classic Convolutional Networks 
 
+![classic_conv_nets](dlng/tf_17.jpg)
+
+- LeNet-5
+- AlexNet (Relu)
+- VGG-16
+
 
 ### 16. Special Networks
 
+![Special_Networks](dlng/tf_18.jpg)
 
-### 17. Practical Advice
+- ResNets
+- Network in Network
+- Inception Networks
+
+
+### 17. Practical Advices
+
+![practical_advices](dlng/tf_19.jpg)
+
+- Use open source implementations
+- Data Augmentation
+- Transfer Learning
+- Tips for doing well on benchmarks/competitions
+	- Ensembling
+	- Multi-crop at test time
 
 
 ### 18. Detection Algorithms
 
+![detection_algorithms](dlng/tf_20.jpg)
+
+- Object detection
+- Landmark detection
+- Sliding Windows
+- YOLO: You Only Look Once
+- IOU: Intersection Over Union
+- Non Max Suppression
+- Anchor Boxes
+
 
 ### 19. Face Recognition
+
+![Face_recognition](dlng/tf_21.jpg)
+
+- One-shot learning
+- Siamese Network - DeepFace
+- Triple Loss
 
 
 ### 20. Neural Style Transfer
 
+![Neural_style_transfer](dlng/tf_22.jpg)
+
+- Content Cost Function
+- Style Const Function
+
 
 ### 21. Recurrent Neural Networks
 
+![RNN_1](dlng/tf_23.jpg)
+
+![RNN_2](dlng/tf_24.jpg)
+
+- Sequence Problems
+- Recurrent Neural Networks
+- Types of RNN
+- Language Modeling
+- Sampling Sentences
+- Vanishing Gradients
+- GRU: Gated Recurrent Unit
+- LSTM: Long Short Term Memory
+- BRNN: Bi-Directional RNN
+ 
 
 ### 22. NLP Word Embeddings
+
+![word2vec_1](dlng/tf_25.jpg)
+
+![word2vec_2](dlng/tf_26.jpg)
+
+- Word embeddings
+- Using word embeddings
+- Learning word embeddings
+	- Using a neural language model
+	- Skip-grams
+	- Negative sampling
+	- GloVe word vectors
+- Sentiment classification
+- Eliminating bias in word embeddings
+	- Identify bias direction
+	- Neutralize
+	- Equalize pairs
 
 
 ### 23. Sequence to Sequence
 
+![sequence-to-sequence_1](dlng/tf_27.jpg)
+
+![sequence-to-sequence_2](dlng/tf_28.jpg)
+
+- Basic Models
+- Beam search
+	- How do we pick B
+	- Error analysis in Beam Search
+- BLEU score
+- Attention Model
+- Speech Recognition
+- Trigger Word detection
 
 
 ### Reference

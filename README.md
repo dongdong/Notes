@@ -1,18 +1,18 @@
 ### Table of Contents: ###
 
 * CPP
-	* [C++ Common Knowledge](CPP/CppCommonKnowledge.md)
+	* [C++ Common Knowledge](Programming/CPP/CppCommonKnowledge.md)
 
 
 * Operating System
-	* [Introduction to Operating Systems](OS/IntroOS.md)
+	* [Introduction to Operating Systems](INF/OS/IntroOS.md)
 
 
 * Distributed System
-	* [Distributed systems for fun and profit](DS/DistributedSystemsForFunAndProfit.md)
+	* [Distributed systems for fun and profit](INF/DS/DistributedSystemsForFunAndProfit.md)
 
 
 * Network
-	* [select, poll and epoll](Network/LinuxIO.md)
+	* [select, poll and epoll](INF/Network/LinuxIO.md)
 
 * ...

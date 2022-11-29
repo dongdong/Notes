@@ -64,8 +64,106 @@
 
 ##### Transformer
 
+- Attension is all you need
+  - Simple network architecture, based solely on attention mechanism
+  - more parallelizable and need less time to train
+  - allow modelling of dependencies of long distances
+  - draw global dependencies between input and output 
 
-##### Bert
+
+- Architecture
+  - encoder-decoder structure
+    - Encoder: a stack of N=6 identical layers, each layer has 2 sub-layers:
+      - multi-head self-attention
+      - simple, position-wise fully connected feed-forward networks
+    - Decoder: also a stack of N=6 identical layers, each has 3 sub-layers:
+      - masked multi-head self-attention
+      - multi-head attention with the encoder
+      - simple, position-wise fully connected feed-forward networks
+       
+  ![img.png](images/transformer_1.png)
+
+
+- Technical Details
+  - Attention
+    - mapping a query and a key-value pairs to an output
+    - Scaled dot-product attention
+    - Multi-head attention
+      - linearly project the (Q,K,V) h times
+      - allow attending the information from different representation subspaces at different positions
+      - compute cose is similar
+    - applications of attention in this model
+      - encoder self-attention
+      - decoder masked self-attention
+      - encoder-decoder attention
+    
+  ![img.png](images/transformer_2.png)
+
+  - Position-wise fully connected feed-forward networks
+    - applied to each position separately and identically
+    - consists of two linear transformation and a RELU in between
+    - FFN(x) = max(0, W1x + b1)W2 + b2
+  - Embeddings and softmax
+    - use learned embeddings to convert input and output token to vectors
+    - use learned linear transformation and softmax to convert the decoder output to predict the next-token probabilities
+  - Positional Encoding
+    - inject the position information to the input
+    - add positional encoding to input embedding of encoder and decoder
+  - residual connection and layer normalization
+    - each sublayer output = LayerNorm(x + sublayer(x))
+  - Regularization
+    - residual dropout
+    - label smoothing
+  
+
+##### BERT
+
+- BERT: Pre-training of deep bidirectional transformers for language understanding
+  - Bidirectional Encoder Representations from Transformers
+      - ELMo: bidirectional (independent l-r, r-l), RNN, unidirectional language model
+      - GPT: uni-directional, transformer decoder, unidirectional language model
+      - BERT: bidirectional, transformer encoder, masked language model
+  - pretrain: deep bidirectional representations from unlabeled text
+  - fine-tune: just one additional output layer 
+  - fine-tune based representation model: reduce the need of many heavily-engineered task-specific architectures
+
+
+- BERT detailed implementation
+  - pretrain & fine-tune
+  ![bert](images/bert_1.png)
+  - unified architecture across different tasks: minimal difference between the pre-trained architecture and final downstream architecture
+  - Model Architecture
+    - BERT-BASE: L(layer): 12, H(hidden size): 768, A(attention head): 12, total parameters: 110M
+    - BERT-LARGE: L: 24, H: 1024, A: 16, total parameters: 340M
+  - Input and Output Representation
+    - A single sequence or A pair of sentences
+    - WordPiece embeddings
+    - first token: [CLS], final hidden state embeddings for classification
+    - separate token for sentences: [SEP]
+    - add learning embeddings to indicate which sentences the token belongs
+  ![bert input](images/bert_2.png)
+  
+
+- Pretraining BERT
+  - Task #1: Masked LM
+    - mask 15% of tokens in each sentence at random, then predict the masked words
+      - the [MASK] token, 80%
+      - random token, 10%
+      - unchanged, 10%
+  - Task #2: Next Sentence Prediction
+    - To predict whether sentence B is the next sentence of A
+    - Training data:
+      - 50% of time, B is actual next sentenec of A
+      - 50% is a random sentence
+    - [CLS] is used for prediction
+    
+
+- Fine-tuning BERT
+  - simply plug in the task specific inputs and outputs into BERT, and fine-tune all the parameters end-to-end
+    - sentence pairs -> paraphrasing
+    - hypothesis-premise pairs -> entailment
+    - question-passage pairs -> question answering 
+    - single text -> text classification or sequence tagging
 
 
 ##### GPT

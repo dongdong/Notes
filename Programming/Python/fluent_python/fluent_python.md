@@ -152,7 +152,7 @@
 
 - Generic Mapping Types
 
-  ![fp_3_1](./assets/fp_3_1.png)
+  <img src="./assets/fp_3_1.png" alt="fp_3_1" style="zoom:40%;" />
 
   - Mapping, Mutable Mapping: interface of dict
   - keys must be **hashable**
@@ -227,7 +227,7 @@
 
 - Set
 
-  ![fp_3_2](/Users/dongdong/study/Notes/Programming/Python/fluent_python/assets/fp_3_2.png)
+  <img src="./assets/fp_3_2.png" alt="fp_3_2" style="zoom:40%;" />
 
   - Literal set syntax
     - a =  {1, 2, 3}
@@ -495,7 +495,7 @@
 
 - Case study: refactoring Strategy
 
-  ![fp_6_1](/Users/dongdong/study/Notes/Programming/Python/fluent_python/assets/fp_6_1.png)
+  <img src="./assets/fp_6_1.png" alt="fp_6_1" style="zoom:33%;" />
 
   - Classic Strategy 
 
@@ -614,7 +614,7 @@
 
 - Command strategy
 
-  ![fp_6_2](/Users/dongdong/study/Notes/Programming/Python/fluent_python/assets/fp_6_2.png)
+  <img src="./assets/fp_6_2.png" alt="fp_6_2" style="zoom:33%;" />
 
   - The goal of Command is to decouple an object that invokes an operation (the Invoker) from the provider object that implements it (the Receiver)
   
@@ -1272,7 +1272,7 @@
 
     - The formal sequence interface defined as an ABC
 
-      ![fp_11_1](/Users/dongdong/study/Notes/Programming/Python/fluent_python/assets/fp_11_1.png)
+      <img src="./assets/fp_11_1.png" alt="fp_11_1" style="zoom:40%;" />
 
     -  Partial sequence protocol implementation: only implement \_\_getitem\_\_
 
@@ -1306,7 +1306,7 @@
 
 - Subclassing an ABC
 
-  ![fp_11_2](assets/fp_11_2.png)
+  <img src="assets/fp_11_2.png" alt="fp_11_2" style="zoom:40%;" />
 
   ```python
   import collections
@@ -1341,7 +1341,7 @@
 
   - ABCs in collections.abc
 
-    ![fp_11_3](assets/fp_11_3.png)
+    <img src="assets/fp_11_3.png" alt="fp_11_3" style="zoom:40%;" />
 
     - Iterable, Container, Sized
       - Every collection should either inherit from these ABCs or at least implement compatible protocols
@@ -1368,7 +1368,7 @@
 
 - Defining and Using an ABC
 
-  ![fp_11_4](assets/fp_11_4.png)
+  <img src="assets/fp_11_4.png" alt="fp_11_4" style="zoom:40%;" />
 
   ```python
   import abc
@@ -1597,7 +1597,7 @@
 
   - Dispatching mechanism for handling operations of different types
 
-    ![fp_13_1](assets/fp_13_1.png)
+    <img src="assets/fp_13_1.png" alt="fp_13_1" style="zoom:40%;" />
 
   - Reversed special methods: called on the righthand operand
 
@@ -1645,7 +1645,7 @@
 
   - Rules:
 
-    ![fp_13_2](assets/fp_13_2.png)
+    <img src="assets/fp_13_2.png" alt="fp_13_2" style="zoom:50%;" />
 
     - A forword call to \_\_gt\_\_ is followed by a reverse call to \_\_lt\_\_ with the swapped arguments
     - == both forword and reverse call to \_\_eq\_\_, only swap arguments

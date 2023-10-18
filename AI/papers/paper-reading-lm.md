@@ -1,7 +1,8 @@
-### Paper Reading Notes
+# Paper Reading Notes
 
 
-##### AlexNet
+
+### AlexNet
 
 - ImageNet classification with deep convolutional neuron network
   * It shows that a large, deep convolutional neural network (without any unsupervised pre-training) is capable of achieving record-breaking result
@@ -21,7 +22,9 @@
   * Momentum
   
 
-##### ResNet
+
+
+### ResNet
 
 - Deep Residual Learning for Image Recognition
   * shows that residual networks are easier to optimize, and can gain accuracy from considerably increased depth
@@ -62,7 +65,9 @@
   - do not use dropout
   
 
-##### Transformer
+
+
+### Transformer
 
 - Attension is all you need
   - Simple network architecture, based solely on attention mechanism
@@ -80,7 +85,8 @@
       - masked multi-head self-attention
       - multi-head attention with the encoder
       - simple, position-wise fully connected feed-forward networks
-       
+      
+  
   ![img.png](images/transformer_1.png)
 
 
@@ -97,8 +103,9 @@
       - decoder masked self-attention
       - encoder-decoder attention
     
+  
   ![img.png](images/transformer_2.png)
-
+  
   - Position-wise fully connected feed-forward networks
     - applied to each position separately and identically
     - consists of two linear transformation and a RELU in between
@@ -116,7 +123,9 @@
     - label smoothing
   
 
-##### BERT
+
+
+### BERT
 
 - BERT: Pre-training of deep bidirectional transformers for language understanding
   - Bidirectional Encoder Representations from Transformers
@@ -141,9 +150,8 @@
     - first token: [CLS], final hidden state embeddings for classification
     - separate token for sentences: [SEP]
     - add learning embeddings to indicate which sentences the token belongs
-  ![bert input](images/bert_2.png)
+    ![bert input](images/bert_2.png)
   
-
 - Pretraining BERT
   - Task #1: Masked LM
     - mask 15% of tokens in each sentence at random, then predict the masked words
@@ -165,6 +173,41 @@
     - question-passage pairs -> question answering 
     - single text -> text classification or sequence tagging
 
+
+
+### ViT
+
+- Vision Transformer
+
+  
+
+
+
+### Swin Transfomer
+
+- 
+
+
+
+### MAE
+
+- 
+
+
+
+### ViLT
+
+- 
+
+
+
+### CLIP
+
+- 
+
+
+
+### TODOS
 
 ##### GPT
 
